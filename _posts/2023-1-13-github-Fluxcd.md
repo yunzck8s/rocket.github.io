@@ -50,5 +50,4 @@ flux bootstrap github \
 
 # Clone the git repository
 git clone https://github.com/$GITHUB_USER/fleet-infra
-
 ```
