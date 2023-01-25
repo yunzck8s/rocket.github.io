@@ -3,7 +3,7 @@ layout: post
 ---
 
 # Github actions + flux CD 构建CICD自动化流水线
-
+![](images/k8s.png)
 ## 1.构建kubernetes集群（本次使用集群为GKE）
 
 `GKE是GCP上的容器化平台，可以帮助我们托管kubernetes集群，不需要过多的去考虑维护集群的问题，包括sc之类的都是已经提供。`
