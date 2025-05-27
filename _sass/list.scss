@@ -2,7 +2,8 @@ ul.horizontal-list {
   display: flex;
   //justify-content: space-between;
   margin-top: 0em;
-  margin-left: -40px;
+  margin-left: 0;
+  padding-left: 0;
   flex-wrap: wrap;
 
   li {
@@ -12,14 +13,28 @@ ul.horizontal-list {
 
   li a {
     text-decoration: none;
-    font-weight: normal
+    font-weight: normal;
+    color: var(--text-secondary);
+    padding: 0.5em 0.75em;
+    border-radius: 0.3em;
+    transition: background-color 0.2s ease-out, color 0.2s ease-out;
   }
 
+  li a:hover,
+  li a:focus {
+    color: var(--bg);
+    background-color: var(--links);
+  }
+
+  li a.active {
+    color: var(--bg);
+    background-color: var(--links);
+    font-weight: bold;
+  }
 }
 
 .card {
   padding: 1em;
-  border: 1px var(--text) solid;
   width: 11em;
   height: auto;
   text-align: center;
@@ -28,6 +43,8 @@ ul.horizontal-list {
   background-color: var(--bg-secondary);
   margin-bottom: 0.8em;
   border-radius: 0.5em;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
 
   .header {
     color: var(--links);
@@ -41,6 +58,11 @@ ul.horizontal-list {
     margin: 0.5em 0;
   }
 
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
 
 /* Responsive cards - one column layout on small screens */
