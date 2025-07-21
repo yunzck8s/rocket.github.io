@@ -2,7 +2,28 @@
 layout: default
 ---
 
-<a href="{{ "/" | relative_url }}">{{ site.theme_config.back_home_text }}</a>
-<h1 class="post-title">{{ page.title }}</h1>
-{% include date_and_social_share.html %}
-{{ content }}
+<article class="post">
+  <header class="post-header">
+    <a href="{{ "/" | relative_url }}" class="back-link">← {{ site.theme_config.back_home_text }}</a>
+    <h1 class="post-title">{{ page.title }}</h1>
+    <div class="post-meta">
+      <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%B %d, %Y" }}</time>
+      {% if site.theme_config.show_reading_time == true %}
+        <span class="reading-time">• {{ content | number_of_words | divided_by: 200 }} min read</span>
+      {% endif %}
+    </div>
+    {% if page.tags and site.theme_config.show_tags == true %}
+      <div class="tags">
+        {% for tag in page.tags %}
+          <span class="tag">{{ tag }}</span>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </header>
+
+  <div class="post-content">
+    {{ content }}
+  </div>
+
+  {% include date_and_social_share.html %}
+</article>

@@ -1,10 +1,34 @@
 ---
 layout: default
 ---
-<a href="{{ "/" | relative_url }}">{{ site.theme_config.back_home_text }}</a>
 
-<header>
-  <h1>{{ site.title }}</h1>
+<header class="page-header">
+  <a href="{{ "/" | relative_url }}" class="back-link">← {{ site.theme_config.back_home_text }}</a>
+  <h1>All Posts</h1>
 </header>
 
-{% include post_list.html %}
+<div class="post-list">
+  {% for post in site.posts %}
+    <article class="post-item">
+      <a href="{{ post.url }}" class="post-link">
+        <h2 class="post-title">{{ post.title }}</h2>
+        {% if post.excerpt %}
+          <p class="post-excerpt">{{ post.excerpt | strip_html | truncatewords: 30 }}</p>
+        {% endif %}
+        <div class="post-meta">
+          <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%B %d, %Y" }}</time>
+          {% if site.theme_config.show_reading_time == true %}
+            <span class="reading-time">• {{ post.content | number_of_words | divided_by: 200 }} min read</span>
+          {% endif %}
+          {% if post.tags and site.theme_config.show_tags == true %}
+            <div class="tags">
+              {% for tag in post.tags %}
+                <span class="tag">{{ tag }}</span>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      </a>
+    </article>
+  {% endfor %}
+</div>
