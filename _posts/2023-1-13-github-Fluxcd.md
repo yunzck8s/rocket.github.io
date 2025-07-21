@@ -1,5 +1,8 @@
 ---
 layout: post
+title: "Github Actions + Flux CD 构建CICD自动化流水线"
+date: 2023-01-13
+tags: [devops, kubernetes, fluxcd, cicd, github-actions]
 ---
 
 # Github actions + flux CD 构建CICD自动化流水线
