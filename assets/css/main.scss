@@ -14,6 +14,8 @@ body {
   background-size: 400% 400%;
   min-height: 100vh;
   animation: gradientShift 15s ease infinite;
+  background-image: 
+    url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><defs><pattern id="movingParticlesLight" width="400" height="400" patternUnits="userSpaceOnUse"><circle cx="80" cy="80" r="4" fill="%23ff6b6b" opacity="0.6"><animate attributeName="cx" values="80;120;80" dur="8s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.6;1;0.6" dur="4s" repeatCount="indefinite"/></circle><circle cx="200" cy="150" r="3" fill="%234ecdc4" opacity="0.5"><animate attributeName="cy" values="150;100;150" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.5;0.9;0.5" dur="3s" repeatCount="indefinite"/></circle><circle cx="320" cy="220" r="5" fill="%2345b7d1" opacity="0.7"><animate attributeName="cx" values="320;280;320" dur="10s" repeatCount="indefinite"/><animate attributeName="cy" values="220;180;220" dur="7s" repeatCount="indefinite"/></circle><circle cx="150" cy="300" r="2.5" fill="%2396ceb4" opacity="0.4"><animate attributeName="cx" values="150;180;150" dur="9s" repeatCount="indefinite"/></circle><circle cx="350" cy="350" r="3.5" fill="%23ffeaa7" opacity="0.8"><animate attributeName="cy" values="350;320;350" dur="5s" repeatCount="indefinite"/></circle></pattern></defs><rect width="400" height="400" fill="url(%23movingParticlesLight)"/></svg>');
   
   &::before {
     content: '';
@@ -304,7 +306,19 @@ body {
       radial-gradient(circle at 40% 40%, rgba(69, 183, 209, 0.3) 0%, transparent 60%),
       radial-gradient(circle at 60% 80%, rgba(150, 206, 180, 0.3) 0%, transparent 60%),
       radial-gradient(circle at 90% 10%, rgba(255, 234, 167, 0.3) 0%, transparent 60%),
-      url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"><defs><pattern id="particles" width="300" height="300" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="3" fill="%23ff6b6b" opacity="0.6"><animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite"/></circle><circle cx="150" cy="100" r="2" fill="%234ecdc4" opacity="0.5"><animate attributeName="opacity" values="0.5;0.9;0.5" dur="4s" repeatCount="indefinite"/></circle><circle cx="250" cy="150" r="2.5" fill="%2345b7d1" opacity="0.7"><animate attributeName="opacity" values="0.7;1;0.7" dur="2.5s" repeatCount="indefinite"/></circle><circle cx="100" cy="200" r="1.5" fill="%2396ceb4" opacity="0.4"><animate attributeName="opacity" values="0.4;0.8;0.4" dur="3.5s" repeatCount="indefinite"/></circle><circle cx="200" cy="250" r="2" fill="%23ffeaa7" opacity="0.6"><animate attributeName="opacity" values="0.6;1;0.6" dur="2.8s" repeatCount="indefinite"/></circle></pattern></defs><rect width="300" height="300" fill="url(%23particles)"/></svg>');
+      url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><defs><pattern id="movingParticles" width="400" height="400" patternUnits="userSpaceOnUse"><circle cx="80" cy="80" r="4" fill="%23ff6b6b" opacity="0.8"><animate attributeName="cx" values="80;120;80" dur="8s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.8;1;0.8" dur="4s" repeatCount="indefinite"/></circle><circle cx="200" cy="150" r="3" fill="%234ecdc4" opacity="0.6"><animate attributeName="cy" values="150;100;150" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite"/></circle><circle cx="320" cy="220" r="5" fill="%2345b7d1" opacity="0.7"><animate attributeName="cx" values="320;280;320" dur="10s" repeatCount="indefinite"/><animate attributeName="cy" values="220;180;220" dur="7s" repeatCount="indefinite"/></circle><circle cx="150" cy="300" r="2.5" fill="%2396ceb4" opacity="0.5"><animate attributeName="cx" values="150;180;150" dur="9s" repeatCount="indefinite"/></circle><circle cx="350" cy="350" r="3.5" fill="%23ffeaa7" opacity="0.9"><animate attributeName="cy" values="350;320;350" dur="5s" repeatCount="indefinite"/></circle><circle cx="100" cy="50" r="2" fill="%23ff9ff3" opacity="0.4"><animate attributeName="cx" values="100;140;100" dur="12s" repeatCount="indefinite"/><animate attributeName="cy" values="50;80;50" dur="8s" repeatCount="indefinite"/></circle><circle cx="280" cy="80" r="3" fill="%2354a0ff" opacity="0.6"><animate attributeName="cy" values="80;120;80" dur="7s" repeatCount="indefinite"/></circle></pattern></defs><rect width="400" height="400" fill="url(%23movingParticles)"/></svg>');
+  }
+}
+
+[data-theme="dark"] body {
+  &::before {
+    background-image: 
+      radial-gradient(circle at 20% 80%, rgba(45, 27, 105, 0.6) 0%, transparent 70%),
+      radial-gradient(circle at 80% 20%, rgba(17, 153, 142, 0.5) 0%, transparent 70%),
+      radial-gradient(circle at 40% 40%, rgba(56, 239, 125, 0.3) 0%, transparent 70%),
+      radial-gradient(circle at 60% 80%, rgba(15, 76, 117, 0.4) 0%, transparent 70%),
+      radial-gradient(circle at 90% 10%, rgba(50, 130, 184, 0.4) 0%, transparent 70%),
+      url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400"><defs><pattern id="movingParticlesDark" width="400" height="400" patternUnits="userSpaceOnUse"><circle cx="80" cy="80" r="4" fill="%2300d4ff" opacity="0.8"><animate attributeName="cx" values="80;120;80" dur="8s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.8;1;0.8" dur="4s" repeatCount="indefinite"/></circle><circle cx="200" cy="150" r="3" fill="%2338ef7d" opacity="0.6"><animate attributeName="cy" values="150;100;150" dur="6s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite"/></circle><circle cx="320" cy="220" r="5" fill="%233282b8" opacity="0.7"><animate attributeName="cx" values="320;280;320" dur="10s" repeatCount="indefinite"/><animate attributeName="cy" values="220;180;220" dur="7s" repeatCount="indefinite"/></circle><circle cx="150" cy="300" r="2.5" fill="%232d1b69" opacity="0.5"><animate attributeName="cx" values="150;180;150" dur="9s" repeatCount="indefinite"/></circle><circle cx="350" cy="350" r="3.5" fill="%2311998e" opacity="0.9"><animate attributeName="cy" values="350;320;350" dur="5s" repeatCount="indefinite"/></circle></pattern></defs><rect width="400" height="400" fill="url(%23movingParticlesDark)"/></svg>');
   }
 }
 
@@ -323,24 +337,44 @@ body {
     content: '';
     position: absolute;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.05) 50%, transparent 100%);
     animation: float 20s infinite ease-in-out;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
   }
   
   &::before {
-    width: 100px;
-    height: 100px;
-    top: 20%;
-    left: 10%;
+    width: 120px;
+    height: 120px;
+    top: 15%;
+    left: 8%;
     animation-delay: -5s;
+    animation-duration: 25s;
   }
   
   &::after {
-    width: 150px;
-    height: 150px;
-    top: 60%;
-    right: 15%;
+    width: 180px;
+    height: 180px;
+    top: 55%;
+    right: 12%;
     animation-delay: -10s;
+    animation-duration: 30s;
+  }
+}
+
+/* Additional floating particles */
+.floating-elements {
+  &:before {
+    content: '';
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    top: 75%;
+    left: 25%;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(78, 205, 196, 0.3) 0%, rgba(78, 205, 196, 0.1) 50%, transparent 100%);
+    animation: float 18s infinite ease-in-out;
+    animation-delay: -15s;
+    box-shadow: 0 0 15px rgba(78, 205, 196, 0.2);
   }
 }
 
@@ -487,6 +521,115 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
+/* Animation keyframes */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes backgroundShift {
+  0%, 100% {
+    transform: translateX(0) translateY(0) rotate(0deg);
+    opacity: 0.8;
+  }
+  25% {
+    transform: translateX(20px) translateY(-15px) rotate(1deg);
+    opacity: 0.9;
+  }
+  50% {
+    transform: translateX(-10px) translateY(10px) rotate(-0.5deg);
+    opacity: 0.7;
+  }
+  75% {
+    transform: translateX(15px) translateY(5px) rotate(0.8deg);
+    opacity: 0.85;
+  }
+}
+
+@keyframes starFloat {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+    opacity: 0.8;
+  }
+  33% {
+    transform: translateY(-10px) rotate(120deg);
+    opacity: 1;
+  }
+  66% {
+    transform: translateY(5px) rotate(240deg);
+    opacity: 0.6;
+  }
+}
+
+@keyframes colorWave {
+  0%, 100% {
+    filter: hue-rotate(0deg) brightness(1);
+  }
+  25% {
+    filter: hue-rotate(90deg) brightness(1.1);
+  }
+  50% {
+    filter: hue-rotate(180deg) brightness(0.9);
+  }
+  75% {
+    filter: hue-rotate(270deg) brightness(1.05);
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  25% {
+    transform: translateY(-20px) translateX(10px);
+  }
+  50% {
+    transform: translateY(-10px) translateX(-15px);
+  }
+  75% {
+    transform: translateY(-30px) translateX(5px);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes rainbowBorder {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
 /* Enhanced scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
@@ -545,6 +688,8 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Custom Hero Section Styles */
 .hero-section {
+  animation: colorWave 12s ease-in-out infinite;
+  
   .hero-image svg {
     transition: transform 0.3s ease;
     
