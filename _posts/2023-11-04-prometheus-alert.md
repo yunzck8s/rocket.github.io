@@ -3,6 +3,7 @@ layout: post
 title: "Kubernetes集群监控告警：Prometheus AlertManager实战"
 date: 2023-11-04
 tags: [devops, kubernetes, prometheus, alertmanager, monitoring]
+permalink: /2023/11/04/prometheus-alertmanager-kubernetes-monitoring.html
 ---
 
 ```
