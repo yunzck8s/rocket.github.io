@@ -9,8 +9,11 @@
 /* Enhanced Background Styles */
 body {
   position: relative;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: 
+    linear-gradient(45deg, #ff6b6b 0%, #4ecdc4 25%, #45b7d1 50%, #96ceb4 75%, #ffeaa7 100%);
+  background-size: 400% 400%;
   min-height: 100vh;
+  animation: gradientShift 15s ease infinite;
   
   &::before {
     content: '';
@@ -20,11 +23,13 @@ body {
     width: 100%;
     height: 100%;
     background: 
-      radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-      radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
-    z-index: -2;
-    animation: backgroundShift 20s ease-in-out infinite;
+      radial-gradient(circle at 20% 80%, rgba(255, 107, 107, 0.4) 0%, transparent 60%),
+      radial-gradient(circle at 80% 20%, rgba(78, 205, 196, 0.4) 0%, transparent 60%),
+      radial-gradient(circle at 40% 40%, rgba(69, 183, 209, 0.3) 0%, transparent 60%),
+      radial-gradient(circle at 60% 80%, rgba(150, 206, 180, 0.3) 0%, transparent 60%),
+      radial-gradient(circle at 90% 10%, rgba(255, 234, 167, 0.3) 0%, transparent 60%);
+    z-index: -3;
+    animation: backgroundShift 25s ease-in-out infinite;
   }
   
   &::after {
@@ -34,61 +39,122 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grain" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="%23ffffff" opacity="0.05"/><circle cx="75" cy="75" r="1" fill="%23ffffff" opacity="0.03"/><circle cx="50" cy="10" r="0.5" fill="%23ffffff" opacity="0.04"/><circle cx="10" cy="60" r="0.8" fill="%23ffffff" opacity="0.02"/><circle cx="90" cy="40" r="1.2" fill="%23ffffff" opacity="0.06"/></pattern></defs><rect width="100" height="100" fill="url(%23grain)"/></svg>');
-    z-index: -1;
-    animation: float 30s ease-in-out infinite;
+    background: 
+      url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><defs><pattern id="stars" width="200" height="200" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="2" fill="%23ffffff" opacity="0.1"/><circle cx="75" cy="75" r="1.5" fill="%23ffffff" opacity="0.08"/><circle cx="125" cy="125" r="1" fill="%23ffffff" opacity="0.06"/><circle cx="175" cy="175" r="2.5" fill="%23ffffff" opacity="0.12"/><circle cx="50" cy="150" r="1" fill="%23ffffff" opacity="0.05"/><circle cx="150" cy="50" r="1.8" fill="%23ffffff" opacity="0.09"/><polygon points="100,10 102,18 110,18 104,24 106,32 100,28 94,32 96,24 90,18 98,18" fill="%23ffffff" opacity="0.15"/><polygon points="30,80 31,85 36,85 32,89 33,94 30,91 27,94 28,89 24,85 29,85" fill="%23ffffff" opacity="0.1"/><polygon points="170,120 171,125 176,125 172,129 173,134 170,131 167,134 168,129 164,125 169,125" fill="%23ffffff" opacity="0.12"/></pattern></defs><rect width="200" height="200" fill="url(%23stars)"/></svg>'),
+      linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.02) 50%, transparent 70%);
+    z-index: -2;
+    animation: starFloat 40s ease-in-out infinite;
   }
 }
 
 /* Dark theme background */
 [data-theme="dark"] body {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  background: 
+    linear-gradient(45deg, #2d1b69 0%, #11998e 25%, #38ef7d 50%, #0f4c75 75%, #3282b8 100%);
+  background-size: 400% 400%;
+  animation: gradientShift 20s ease infinite;
   
   &::before {
     background: 
-      radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
-      radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
-      radial-gradient(circle at 40% 40%, rgba(34, 197, 94, 0.1) 0%, transparent 50%);
+      radial-gradient(circle at 20% 80%, rgba(45, 27, 105, 0.6) 0%, transparent 70%),
+      radial-gradient(circle at 80% 20%, rgba(17, 153, 142, 0.5) 0%, transparent 70%),
+      radial-gradient(circle at 40% 40%, rgba(56, 239, 125, 0.3) 0%, transparent 70%),
+      radial-gradient(circle at 60% 80%, rgba(15, 76, 117, 0.4) 0%, transparent 70%),
+      radial-gradient(circle at 90% 10%, rgba(50, 130, 184, 0.4) 0%, transparent 70%);
+    animation: backgroundShift 30s ease-in-out infinite;
+  }
+  
+  &::after {
+    background: 
+      url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><defs><pattern id="darkstars" width="200" height="200" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1.5" fill="%2300d4ff" opacity="0.3"/><circle cx="75" cy="75" r="1" fill="%2300d4ff" opacity="0.2"/><circle cx="125" cy="125" r="0.8" fill="%2300d4ff" opacity="0.15"/><circle cx="175" cy="175" r="2" fill="%2300d4ff" opacity="0.35"/><circle cx="50" cy="150" r="0.5" fill="%2300d4ff" opacity="0.1"/><circle cx="150" cy="50" r="1.2" fill="%2300d4ff" opacity="0.25"/><polygon points="100,10 101,16 107,16 102,20 103,26 100,23 97,26 98,20 93,16 99,16" fill="%2300d4ff" opacity="0.4"/><polygon points="30,80 31,84 35,84 32,87 33,91 30,89 27,91 28,87 25,84 29,84" fill="%2300d4ff" opacity="0.3"/></pattern></defs><rect width="200" height="200" fill="url(%23darkstars)"/></svg>'),
+      linear-gradient(45deg, transparent 40%, rgba(0, 212, 255, 0.05) 50%, transparent 60%);
+    animation: starFloat 35s ease-in-out infinite reverse;
   }
 }
 
 /* Main content container with glass effect */
 .container, main {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(15px);
+  border: 2px solid transparent;
+  border-radius: 25px;
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
   margin: 20px auto;
-  padding: 30px;
+  padding: 35px;
   position: relative;
   overflow: hidden;
   
   &::before {
     content: '';
     position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, 
+      #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7, 
+      #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7);
+    background-size: 400% 400%;
+    border-radius: 25px;
+    z-index: -1;
+    animation: gradientShift 8s ease infinite;
+  }
+  
+  &::after {
+    content: '';
+    position: absolute;
     top: 0;
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-    animation: shimmer 3s infinite;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+    animation: shimmer 4s infinite;
+    z-index: 1;
+    pointer-events: none;
   }
 }
 
 [data-theme="dark"] .container,
 [data-theme="dark"] main {
-  background: rgba(15, 23, 42, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  background: rgba(15, 23, 42, 0.4);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  
+  &::before {
+    background: linear-gradient(45deg, 
+      #2d1b69, #11998e, #38ef7d, #0f4c75, #3282b8, 
+      #2d1b69, #11998e, #38ef7d, #0f4c75, #3282b8);
+    background-size: 400% 400%;
+    animation: gradientShift 10s ease infinite;
+  }
+  
+  &::after {
+    background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.1), transparent);
+  }
 }
 
 /* Animations */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 @keyframes backgroundShift {
-  0%, 100% { transform: translateX(0) translateY(0); }
-  25% { transform: translateX(-5px) translateY(-10px); }
-  50% { transform: translateX(10px) translateY(5px); }
-  75% { transform: translateX(-3px) translateY(8px); }
+  0%, 100% { transform: translateX(0) translateY(0) scale(1); }
+  25% { transform: translateX(-8px) translateY(-15px) scale(1.02); }
+  50% { transform: translateX(15px) translateY(8px) scale(0.98); }
+  75% { transform: translateX(-5px) translateY(12px) scale(1.01); }
+}
+
+@keyframes starFloat {
+  0%, 100% { transform: translateY(0px) translateX(0px) rotate(0deg); }
+  25% { transform: translateY(-15px) translateX(10px) rotate(2deg); }
+  50% { transform: translateY(10px) translateX(-8px) rotate(-1deg); }
+  75% { transform: translateY(-5px) translateX(5px) rotate(1deg); }
 }
 
 @keyframes float {
@@ -105,6 +171,13 @@ body {
 @keyframes pulse {
   0%, 100% { opacity: 0.8; }
   50% { opacity: 1; }
+}
+
+@keyframes colorWave {
+  0%, 100% { filter: hue-rotate(0deg) brightness(1); }
+  25% { filter: hue-rotate(90deg) brightness(1.1); }
+  50% { filter: hue-rotate(180deg) brightness(0.9); }
+  75% { filter: hue-rotate(270deg) brightness(1.05); }
 }
 
 /* Enhanced navigation */
@@ -134,33 +207,59 @@ nav, header {
 
 /* Enhanced cards and posts */
 .post, .card, article {
-  background: rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 15px;
-  padding: 25px;
-  margin: 20px 0;
-  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(12px);
+  border: 2px solid transparent;
+  border-radius: 18px;
+  padding: 28px;
+  margin: 25px 0;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
   
   &::before {
     content: '';
     position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, 
+      #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7, #ff9ff3, #54a0ff,
+      #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7, #ff9ff3, #54a0ff);
+    background-size: 400% 400%;
+    border-radius: 18px;
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    animation: gradientShift 6s ease infinite;
+  }
+  
+  &::after {
+    content: '';
+    position: absolute;
     top: 0;
     left: 0;
     right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, #667eea, #764ba2, #f093fb);
+    height: 4px;
+    background: linear-gradient(90deg, 
+      transparent, #ff6b6b, #4ecdc4, #45b7d1, transparent);
     transform: scaleX(0);
-    transition: transform 0.3s ease;
+    transition: transform 0.4s ease;
+    border-radius: 18px 18px 0 0;
   }
   
   &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 
+      0 20px 40px rgba(0, 0, 0, 0.15),
+      0 0 20px rgba(255, 107, 107, 0.3);
     
     &::before {
+      opacity: 1;
+    }
+    
+    &::after {
       transform: scaleX(1);
     }
   }
@@ -169,11 +268,43 @@ nav, header {
 [data-theme="dark"] .post,
 [data-theme="dark"] .card,
 [data-theme="dark"] article {
-  background: rgba(15, 23, 42, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(15, 23, 42, 0.3);
+  
+  &::before {
+    background: linear-gradient(45deg, 
+      #2d1b69, #11998e, #38ef7d, #0f4c75, #3282b8, #ff6348, #ffa502,
+      #2d1b69, #11998e, #38ef7d, #0f4c75, #3282b8, #ff6348, #ffa502);
+    background-size: 400% 400%;
+    animation: gradientShift 8s ease infinite;
+  }
+  
+  &::after {
+    background: linear-gradient(90deg, 
+      transparent, #00d4ff, #11998e, #38ef7d, transparent);
+  }
   
   &:hover {
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    box-shadow: 
+      0 20px 40px rgba(0, 0, 0, 0.4),
+      0 0 25px rgba(0, 212, 255, 0.4);
+  }
+}
+
+/* Additional visual enhancements */
+.hero-section {
+  animation: colorWave 20s ease-in-out infinite;
+}
+
+/* Floating particles effect */
+body {
+  &::before {
+    background-image: 
+      radial-gradient(circle at 20% 80%, rgba(255, 107, 107, 0.4) 0%, transparent 60%),
+      radial-gradient(circle at 80% 20%, rgba(78, 205, 196, 0.4) 0%, transparent 60%),
+      radial-gradient(circle at 40% 40%, rgba(69, 183, 209, 0.3) 0%, transparent 60%),
+      radial-gradient(circle at 60% 80%, rgba(150, 206, 180, 0.3) 0%, transparent 60%),
+      radial-gradient(circle at 90% 10%, rgba(255, 234, 167, 0.3) 0%, transparent 60%),
+      url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300"><defs><pattern id="particles" width="300" height="300" patternUnits="userSpaceOnUse"><circle cx="50" cy="50" r="3" fill="%23ff6b6b" opacity="0.6"><animate attributeName="opacity" values="0.6;1;0.6" dur="3s" repeatCount="indefinite"/></circle><circle cx="150" cy="100" r="2" fill="%234ecdc4" opacity="0.5"><animate attributeName="opacity" values="0.5;0.9;0.5" dur="4s" repeatCount="indefinite"/></circle><circle cx="250" cy="150" r="2.5" fill="%2345b7d1" opacity="0.7"><animate attributeName="opacity" values="0.7;1;0.7" dur="2.5s" repeatCount="indefinite"/></circle><circle cx="100" cy="200" r="1.5" fill="%2396ceb4" opacity="0.4"><animate attributeName="opacity" values="0.4;0.8;0.4" dur="3.5s" repeatCount="indefinite"/></circle><circle cx="200" cy="250" r="2" fill="%23ffeaa7" opacity="0.6"><animate attributeName="opacity" values="0.6;1;0.6" dur="2.8s" repeatCount="indefinite"/></circle></pattern></defs><rect width="300" height="300" fill="url(%23particles)"/></svg>');
   }
 }
 
