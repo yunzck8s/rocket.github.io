@@ -6,7 +6,7 @@ layout: default
   {% if site.theme_config.show_navbar == true %}
     <nav class="navbar">
       {% for item in site.data.home.navbar_entries %}
-        <a href="{{ item.url }}" class="nav-link">{{ item.title }}</a>
+        <a href="{{ item.url | relative_url }}" class="nav-link">{{ item.title }}</a>
       {% endfor %}
     </nav>
   {% endif %}
@@ -28,7 +28,7 @@ layout: default
           <div class="card">
             <h3 class="card-title">{{ project.title }}</h3>
             <p class="card-description">{{ project.desc }}</p>
-            <a href="{{ project.url }}" class="card-link" target="_blank" rel="noopener">
+            <a href="{{ project.url | relative_url }}" class="card-link" target="_blank" rel="noopener">
               View Project →
             </a>
           </div>
@@ -42,7 +42,7 @@ layout: default
       <h2>{{ site.theme_config.home.title_blog }}</h2>
       <div class="post-list">
         {% for post in site.posts limit:5 %}
-          <a href="{{ post.url }}" class="post-item">
+          <a href="{{ post.url | relative_url }}" class="post-item">
             <h3 class="post-title">{{ post.title }}</h3>
             {% if post.excerpt %}
               <p class="post-excerpt">{{ post.excerpt | strip_html | truncatewords: 20 }}</p>
@@ -62,7 +62,7 @@ layout: default
           <div class="card">
             <h3 class="card-title">{{ project.title }}</h3>
             <p class="card-description">{{ project.desc }}</p>
-            <a href="{{ project.url }}" class="card-link" target="_blank" rel="noopener">
+            <a href="{{ project.url | relative_url }}" class="card-link" target="_blank" rel="noopener">
               View Project →
             </a>
           </div>
@@ -76,7 +76,7 @@ layout: default
   <footer class="footer">
     <div class="footer-links">
       {% for item in site.data.home.footer_entries %}
-        <a href="{{ item.url }}" class="footer-link">{{ item.title }}</a>
+        <a href="{{ item.url | relative_url }}" class="footer-link">{{ item.title }}</a>
       {% endfor %}
     </div>
     <p class="credits">

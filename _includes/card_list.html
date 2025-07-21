@@ -2,7 +2,7 @@
   {% for item in include.collection %}
 
     <li class="card">
-      <a href="{{ item.url }}">
+      <a href="{{ item.url | relative_url }}">
         <span class="header">
           {{ item.title }}
 

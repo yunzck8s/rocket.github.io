@@ -1,6 +1,7 @@
 title: DevOps技术博客
 author: Rocket
-url: https://yunzck8s.github.io/rocket.github.io/ # root address of the site
+url: https://yunzck8s.github.io # root address of the site
+baseurl: /rocket.github.io # subpath of your site, e.g. /blog
 description: > # description of the site (multiple lines allowed)
   DevOps技术博客，专注于Kubernetes、Prometheus、CI/CD、云原生技术分享与实践经验。
 
