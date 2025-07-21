@@ -5,3 +5,103 @@
 @import "post";
 @import "list";
 @import "syntax";
+
+/* Custom Hero Section Styles */
+.hero-section {
+  .hero-image svg {
+    transition: transform 0.3s ease;
+    
+    &:hover {
+      transform: scale(1.05);
+    }
+  }
+  
+  .tech-icons {
+    div {
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      
+      &:hover {
+        transform: translateY(-5px);
+        
+        svg {
+          filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+        }
+      }
+    }
+    
+    svg {
+      transition: filter 0.3s ease;
+    }
+  }
+  
+  .welcome-text {
+    p {
+      transition: color 0.3s ease;
+    }
+  }
+}
+
+/* Dark theme adaptations */
+[data-theme="dark"] {
+  .hero-section {
+    .welcome-text p {
+      &:first-child {
+        color: #e2e8f0 !important;
+      }
+      
+      &:last-child {
+        color: #a0aec0 !important;
+      }
+    }
+    
+    .tech-icons p {
+      color: #a0aec0 !important;
+    }
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .hero-section {
+    .hero-image svg {
+      width: 150px;
+      height: 112px;
+    }
+    
+    .tech-icons {
+      gap: 1rem !important;
+      
+      div svg {
+        width: 45px;
+        height: 45px;
+      }
+    }
+    
+    .welcome-text {
+      padding: 0.5rem !important;
+      
+      p:first-child {
+        font-size: 1.1rem !important;
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-section {
+    margin: 1rem 0 !important;
+    
+    .tech-icons {
+      gap: 0.8rem !important;
+      
+      div svg {
+        width: 40px;
+        height: 40px;
+      }
+      
+      p {
+        font-size: 0.8rem !important;
+      }
+    }
+  }
+}
