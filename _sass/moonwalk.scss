@@ -478,6 +478,15 @@ html {
   animation-delay: var(--delay);
 }
 
+/* Theme transition */
+.transition,
+.transition *,
+.transition *:before,
+.transition *:after {
+  transition: all 750ms !important;
+  transition-delay: 0s !important;
+}
+
 /* Focus styles for accessibility */
 *:focus {
   outline: 2px solid var(--accent-primary);
