@@ -7,16 +7,27 @@
   function themeChange() {
     let button = document.querySelector('.theme-toggle');
 
+    const updateButton = (theme) => {
+      const isDark = theme === 'dark';
+      const label = isDark ? 'Switch to light mode' : 'Switch to dark mode';
+      button.setAttribute('aria-label', label);
+      button.setAttribute('title', label);
+    };
+
+    updateButton(document.documentElement.getAttribute('data-theme'));
+
     button.addEventListener('click', function (e) {
       let currentTheme = document.documentElement.getAttribute('data-theme');
       if (currentTheme === 'dark') {
         transition();
         document.documentElement.setAttribute('data-theme', 'light');
         localStorage.setItem('theme', 'light');
+        updateButton('light');
       } else {
         transition();
         document.documentElement.setAttribute('data-theme', 'dark');
         localStorage.setItem('theme', 'dark');
+        updateButton('dark');
       }
     });
 
