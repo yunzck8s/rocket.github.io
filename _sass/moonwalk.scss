@@ -391,6 +391,14 @@ th {
 }
 
 /* Animations */
+.transition,
+.transition *,
+.transition *:before,
+.transition *:after {
+  transition: all 750ms !important;
+  transition-delay: 0 !important;
+}
+
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -484,10 +492,16 @@ html {
   outline-offset: 2px;
 }
 
-.theme-toggle:focus {
-  outline: 2px solid var(--accent-primary);
-  outline-offset: 2px;
+.theme-toggle:focus:not(:focus-visible) {
+  outline: none;
 }
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 4px;
+  box-shadow: 0 0 0 4px var(--bg-primary), 0 0 0 6px var(--accent-primary);
+}
+
 
 /* Print styles */
 @media print {

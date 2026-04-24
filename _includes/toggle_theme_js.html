@@ -7,16 +7,31 @@
   function themeChange() {
     let button = document.querySelector('.theme-toggle');
 
+    function updateButton(theme) {
+      if (theme === 'dark') {
+        button.setAttribute('aria-label', 'Switch to light mode');
+        button.setAttribute('aria-pressed', 'true');
+      } else {
+        button.setAttribute('aria-label', 'Switch to dark mode');
+        button.setAttribute('aria-pressed', 'false');
+      }
+    }
+
+    // Initialize button state
+    updateButton(document.documentElement.getAttribute('data-theme'));
+
     button.addEventListener('click', function (e) {
       let currentTheme = document.documentElement.getAttribute('data-theme');
       if (currentTheme === 'dark') {
         transition();
         document.documentElement.setAttribute('data-theme', 'light');
         localStorage.setItem('theme', 'light');
+        updateButton('light');
       } else {
         transition();
         document.documentElement.setAttribute('data-theme', 'dark');
         localStorage.setItem('theme', 'dark');
+        updateButton('dark');
       }
     });
 
@@ -28,4 +43,3 @@
     }
   }
 </script>
-
