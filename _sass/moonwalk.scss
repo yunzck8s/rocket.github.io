@@ -479,14 +479,23 @@ html {
 }
 
 /* Focus styles for accessibility */
-*:focus {
+*:focus-visible {
   outline: 2px solid var(--accent-primary);
   outline-offset: 2px;
 }
 
-.theme-toggle:focus {
+.theme-toggle:focus-visible {
   outline: 2px solid var(--accent-primary);
   outline-offset: 2px;
+}
+
+/* Theme transition */
+html.transition,
+html.transition *,
+html.transition *:before,
+html.transition *:after {
+  transition: background 1s ease, background-color 1s ease, color 1s ease !important;
+  transition-delay: 0s !important;
 }
 
 /* Print styles */
