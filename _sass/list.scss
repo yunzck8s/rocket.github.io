@@ -21,7 +21,7 @@ ul.horizontal-list {
   }
 
   li a:hover,
-  li a:focus {
+  li a:focus-visible {
     color: var(--bg);
     background-color: var(--links);
   }

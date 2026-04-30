@@ -1,0 +1,6 @@
+    x = Class.new
+{: .language-ruby}
+
+{::options syntax_highlighter_opts="{default_lang: ruby\}" /}
+
+    x = Class.new
