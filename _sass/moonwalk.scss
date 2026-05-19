@@ -492,6 +492,25 @@ html {
   outline-offset: 2px;
 }
 
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--accent-primary);
+  color: white;
+  padding: 8px;
+  z-index: 1001;
+  transition: top 0.3s;
+  border-radius: 0 0 var(--radius-sm) 0;
+  border: none;
+}
+
+.skip-link:focus {
+  top: 0;
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
 .theme-toggle:focus-visible {
   outline: 2px solid var(--accent-primary);
   outline-offset: 2px;
