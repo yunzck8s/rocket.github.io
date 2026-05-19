@@ -7,8 +7,28 @@
   function themeChange() {
     let button = document.querySelector('.theme-toggle');
 
+    const getSystemTheme = () => {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    };
+
+    const updateButtonLabel = () => {
+      let currentTheme = document.documentElement.getAttribute('data-theme');
+      if (currentTheme === 'auto') {
+        currentTheme = getSystemTheme();
+      }
+      const label = currentTheme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode';
+      button.setAttribute('aria-label', label);
+      button.setAttribute('title', label);
+    };
+
+    updateButtonLabel();
+
     button.addEventListener('click', function (e) {
       let currentTheme = document.documentElement.getAttribute('data-theme');
+      if (currentTheme === 'auto') {
+        currentTheme = getSystemTheme();
+      }
+
       if (currentTheme === 'dark') {
         transition();
         document.documentElement.setAttribute('data-theme', 'light');
@@ -18,6 +38,7 @@
         document.documentElement.setAttribute('data-theme', 'dark');
         localStorage.setItem('theme', 'dark');
       }
+      updateButtonLabel();
     });
 
     let transition = () => {
