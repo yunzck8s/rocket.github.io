@@ -28,8 +28,8 @@ layout: default
           <div class="card">
             <h3 class="card-title">{{ project.title }}</h3>
             <p class="card-description">{{ project.desc }}</p>
-            <a href="{{ project.url | relative_url }}" class="card-link" target="_blank" rel="noopener">
-              View Project →
+            <a href="{{ project.url | relative_url }}" class="card-link" target="_blank" rel="noopener" aria-label="View project: {{ project.title }}">
+              View Project <span aria-hidden="true">→</span>
             </a>
           </div>
         {% endfor %}
@@ -62,8 +62,8 @@ layout: default
           <div class="card">
             <h3 class="card-title">{{ project.title }}</h3>
             <p class="card-description">{{ project.desc }}</p>
-            <a href="{{ project.url | relative_url }}" class="card-link" target="_blank" rel="noopener">
-              View Project →
+            <a href="{{ project.url | relative_url }}" class="card-link" target="_blank" rel="noopener" aria-label="View project: {{ project.title }}">
+              View Project <span aria-hidden="true">→</span>
             </a>
           </div>
         {% endfor %}
