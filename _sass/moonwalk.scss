@@ -25,6 +25,23 @@
 }
 
 /* Dark theme */
+@media (prefers-color-scheme: dark) {
+  :root[data-theme="auto"] {
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-tertiary: #334155;
+    --bg-code: #1e293b;
+    --text-primary: #f8fafc;
+    --text-secondary: #cbd5e1;
+    --text-tertiary: #94a3b8;
+    --accent-primary: #60a5fa;
+    --accent-secondary: #a78bfa;
+    --accent-tertiary: #f472b6;
+    --border-primary: #334155;
+    --border-secondary: #475569;
+  }
+}
+
 [data-theme="dark"] {
   --bg-primary: #0f172a;
   --bg-secondary: #1e293b;

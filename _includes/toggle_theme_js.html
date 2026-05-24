@@ -1,31 +1,44 @@
 <script type="text/javascript">
   window.addEventListener('load', themeChange);
-  const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : null;
-  if (currentTheme)
-    document.documentElement.setAttribute('data-theme', currentTheme);
+  const storedTheme = localStorage.getItem('theme');
+  if (storedTheme) {
+    document.documentElement.setAttribute('data-theme', storedTheme);
+  }
 
   function themeChange() {
-    let button = document.querySelector('.theme-toggle');
+    const button = document.querySelector('.theme-toggle');
+    if (!button) return;
+
+    const getIsDark = () => {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      return currentTheme === 'dark' ||
+             (currentTheme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    };
+
+    const updateButton = () => {
+      const isDark = getIsDark();
+      const label = isDark ? 'Switch to light theme' : 'Switch to dark theme';
+      button.setAttribute('aria-label', label);
+      button.setAttribute('title', label);
+    };
+
+    updateButton();
 
     button.addEventListener('click', function (e) {
-      let currentTheme = document.documentElement.getAttribute('data-theme');
-      if (currentTheme === 'dark') {
-        transition();
-        document.documentElement.setAttribute('data-theme', 'light');
-        localStorage.setItem('theme', 'light');
-      } else {
-        transition();
-        document.documentElement.setAttribute('data-theme', 'dark');
-        localStorage.setItem('theme', 'dark');
-      }
+      const nextTheme = getIsDark() ? 'light' : 'dark';
+
+      transition();
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('theme', nextTheme);
+      updateButton();
     });
 
-    let transition = () => {
+    const transition = () => {
       document.documentElement.classList.add('transition');
       window.setTimeout(() => {
         document.documentElement.classList.remove('transition');
       }, 1000);
-    }
+    };
   }
 </script>
 
