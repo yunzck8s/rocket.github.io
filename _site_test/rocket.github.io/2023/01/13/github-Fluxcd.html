@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en" class="html" data-theme="dark"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>
+
+      Github Actions + Flux CD 构建CICD自动化流水线
+
+  </title>
+
+  <!-- Begin Jekyll SEO tag v2.7.3 -->
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="Github Actions + Flux CD 构建CICD自动化流水线" />
+<meta name="author" content="Rocket" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Github actions + flux CD 构建CICD自动化流水线 1.构建kubernetes集群（本次使用集群为GKE）" />
+<meta property="og:description" content="Github actions + flux CD 构建CICD自动化流水线 1.构建kubernetes集群（本次使用集群为GKE）" />
+<link rel="canonical" href="https://yunzck8s.github.io/rocket.github.io/2023/01/13/github-Fluxcd.html" />
+<meta property="og:url" content="https://yunzck8s.github.io/rocket.github.io/2023/01/13/github-Fluxcd.html" />
+<meta property="og:site_name" content="DevOps技术博客" />
+<meta property="og:image" content="https://soopr.xyz/images/card?url=https://yunzck8s.github.io/rocket.github.io/2023/01/13/github-Fluxcd.html" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-01-13T00:00:00+00:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:image" content="https://soopr.xyz/images/card?url=https://yunzck8s.github.io/rocket.github.io/2023/01/13/github-Fluxcd.html" />
+<meta property="twitter:title" content="Github Actions + Flux CD 构建CICD自动化流水线" />
+<meta name="twitter:site" content="@abhinav" />
+<meta name="twitter:creator" content="@Rocket" />
+<script type="application/ld+json">
+{"author":{"@type":"Person","name":"Rocket"},"description":"Github actions + flux CD 构建CICD自动化流水线 1.构建kubernetes集群（本次使用集群为GKE）","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://yunzck8s.github.io/rocket.github.io/2023/01/13/github-Fluxcd.html"},"datePublished":"2023-01-13T00:00:00+00:00","headline":"Github Actions + Flux CD 构建CICD自动化流水线","url":"https://yunzck8s.github.io/rocket.github.io/2023/01/13/github-Fluxcd.html","dateModified":"2023-01-13T00:00:00+00:00","@context":"https://schema.org"}</script>
+<script async defer data-soopr-token="" src="https://sdk.soopr.co/soopr.js"  ></script>
+<!-- End Jekyll SEO tag -->
+
+  <link type="application/atom+xml" rel="alternate" href="https://yunzck8s.github.io/rocket.github.io/feed.xml" title="DevOps技术博客" />
+
+  <!-- Favicon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="/assets/images/favicon/site.webmanifest">
+  <link rel="mask-icon" href="/assets/images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  <link rel="shortcut icon" href="/assets/images/favicon/favicon.ico">
+  <meta name="msapplication-TileColor" content="#00aba9">
+  <meta name="msapplication-config" content="/assets/images/favicon/browserconfig.xml">
+  <meta name="theme-color" content="#ffffff">
+  <!-- Favicon -->
+
+  <link rel="stylesheet" href="/rocket.github.io/assets/css/main.css" />
+
+    <script type="text/javascript">
+  window.addEventListener('load', themeChange);
+  const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : null;
+  if (currentTheme)
+    document.documentElement.setAttribute('data-theme', currentTheme);
+
+  function themeChange() {
+    let button = document.querySelector('.theme-toggle');
+
+    button.addEventListener('click', function (e) {
+      let currentTheme = document.documentElement.getAttribute('data-theme');
+      if (currentTheme === 'dark') {
+        transition();
+        document.documentElement.setAttribute('data-theme', 'light');
+        localStorage.setItem('theme', 'light');
+      } else {
+        transition();
+        document.documentElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+      }
+    });
+
+    let transition = () => {
+      document.documentElement.classList.add('transition');
+      window.setTimeout(() => {
+        document.documentElement.classList.remove('transition');
+      }, 1000);
+    }
+  }
+</script>
+
+
+
+</head>
+<body>
+    <a href="#main-content" class="skip-to-content">Skip to content</a>
+
+      <button title="Toggle Theme" class="theme-toggle" aria-label="Toggle Theme">
+  <svg viewBox="0 0 32 32" width="24" height="24" fill="currentcolor">
+    <circle cx="16" cy="16" r="14" fill="none" stroke="currentcolor" stroke-width="4"></circle>
+    <path d="
+             M 16 0
+             A 16 16 0 0 0 16 32
+             z">
+    </path>
+  </svg>
+</button>
+
+
+
+    <div id="main-content" tabindex="-1" class="container">
+      <article class="post">
+  <header class="post-header">
+    <a href="/rocket.github.io/" class="back-link">← home..</a>
+    <h1 class="post-title">Github Actions + Flux CD 构建CICD自动化流水线</h1>
+    <div class="post-meta">
+      <time datetime="2023-01-13T00:00:00+00:00">January 13, 2023</time>
+
+        <span class="reading-time">• 4 min read</span>
+
+    </div>
+
+      <div class="tags">
+
+          <span class="tag">devops</span>
+
+          <span class="tag">kubernetes</span>
+
+          <span class="tag">fluxcd</span>
+
+          <span class="tag">cicd</span>
+
+          <span class="tag">github-actions</span>
+
+      </div>
+
+  </header>
+
+  <div class="post-content">
+    <h1 id="github-actions--flux-cd-构建cicd自动化流水线">Github actions + flux CD 构建CICD自动化流水线</h1>
+<p><img src="./images/k8s.png" align="center" /></p>
+<h2 id="1构建kubernetes集群本次使用集群为gke">1.构建kubernetes集群（本次使用集群为GKE）</h2>
+
+<p><code class="language-plaintext highlighter-rouge">GKE是GCP上的容器化平台，可以帮助我们托管kubernetes集群，不需要过多的去考虑维护集群的问题，包括sc之类的都是已经提供。</code>
+<code class="language-plaintext highlighter-rouge">GCP link</code>: https://console.cloud.google.com</p>
+
+<h2 id="2创建github-仓库">2.创建GitHub 仓库</h2>
+
+<p><code class="language-plaintext highlighter-rouge">Flux CD</code> 是 <code class="language-plaintext highlighter-rouge">gitOps</code> 产品，所以操作都是围绕着git 来进行。
+这个仓库不需要手动创建，flux CD 会自动的帮助你创建，在此之前需要提供你的github username以及 <code class="language-plaintext highlighter-rouge">Personal access tokens</code>。</p>
+
+<p><code class="language-plaintext highlighter-rouge">Personal access tokens</code> 的位置于GitHub的个人的 <code class="language-plaintext highlighter-rouge">settings/Developer settings</code> 下，创建完成注意妥善保管。</p>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c">## install flux command</span>
+<span class="c"># mac</span>
+brew <span class="nb">install </span>fluxcd/tap/flux
+
+<span class="c"># linux</span>
+curl <span class="nt">-s</span> https://fluxcd.io/install.sh | <span class="nb">sudo </span>bash
+
+<span class="c">#windows</span>
+choco <span class="nb">install </span>flux
+<span class="c">##</span>
+
+<span class="c"># To configure your shell to load flux bash completions add to your profile</span>
+<span class="nb">.</span> &lt;<span class="o">(</span>flux completion bash<span class="o">)</span>
+
+<span class="c"># Check your kubernetes cluster</span>
+<span class="c"># The version of kubernetes cluster must be v1.20 or above</span>
+flux check <span class="nt">--pre</span>
+
+
+<span class="c">## install fluxcd</span>
+<span class="nb">export </span><span class="nv">GITHUB_TOKEN</span><span class="o">=</span>&lt;your-token&gt;
+<span class="nb">export </span><span class="nv">GITHUB_USER</span><span class="o">=</span>&lt;your-username&gt;
+
+
+flux bootstrap github <span class="se">\</span>
+  <span class="nt">--owner</span><span class="o">=</span><span class="nv">$GITHUB_USER</span> <span class="se">\</span>
+  <span class="nt">--repository</span><span class="o">=</span>fleet-infra <span class="se">\</span>
+  <span class="nt">--branch</span><span class="o">=</span>main <span class="se">\</span>
+  <span class="nt">--path</span><span class="o">=</span>./ <span class="se">\</span>
+  <span class="nt">--personal</span>
+
+<span class="c"># Clone the git repository</span>
+git clone https://github.com/<span class="nv">$GITHUB_USER</span>/fleet-infra
+</code></pre></div></div>
+
+<h2 id="3-配置应用程序部署">3. 配置应用程序部署</h2>
+
+<p>创建应用程序的 Kubernetes 清单文件，Flux CD 将监控这些文件的变化并自动部署到集群中。</p>
+
+<h3 id="31-创建应用程序配置">3.1 创建应用程序配置</h3>
+
+<p>在 <code class="language-plaintext highlighter-rouge">fleet-infra</code> 仓库中创建应用程序目录结构：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">cd </span>fleet-infra
+<span class="nb">mkdir</span> <span class="nt">-p</span> apps/production
+</code></pre></div></div>
+
+<h3 id="32-创建应用程序部署文件">3.2 创建应用程序部署文件</h3>
+
+<p>创建 <code class="language-plaintext highlighter-rouge">apps/production/my-app.yaml</code>：</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">apps/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Deployment</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">my-app</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">default</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">replicas</span><span class="pi">:</span> <span class="m">3</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">matchLabels</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">my-app</span>
+  <span class="na">template</span><span class="pi">:</span>
+    <span class="na">metadata</span><span class="pi">:</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">app</span><span class="pi">:</span> <span class="s">my-app</span>
+    <span class="na">spec</span><span class="pi">:</span>
+      <span class="na">containers</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">my-app</span>
+        <span class="na">image</span><span class="pi">:</span> <span class="s">nginx:1.21</span>
+        <span class="na">ports</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">containerPort</span><span class="pi">:</span> <span class="m">80</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">my-app-service</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">default</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">my-app</span>
+  <span class="na">ports</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">port</span><span class="pi">:</span> <span class="m">80</span>
+    <span class="na">targetPort</span><span class="pi">:</span> <span class="m">80</span>
+  <span class="na">type</span><span class="pi">:</span> <span class="s">ClusterIP</span>
+</code></pre></div></div>
+
+<h2 id="4-配置-github-actions">4. 配置 GitHub Actions</h2>
+
+<p>在应用程序源码仓库中创建 <code class="language-plaintext highlighter-rouge">.github/workflows/ci-cd.yml</code>：</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">name</span><span class="pi">:</span> <span class="s">CI/CD Pipeline</span>
+
+<span class="na">on</span><span class="pi">:</span>
+  <span class="na">push</span><span class="pi">:</span>
+    <span class="na">branches</span><span class="pi">:</span> <span class="pi">[</span> <span class="nv">main</span> <span class="pi">]</span>
+  <span class="na">pull_request</span><span class="pi">:</span>
+    <span class="na">branches</span><span class="pi">:</span> <span class="pi">[</span> <span class="nv">main</span> <span class="pi">]</span>
+
+<span class="na">env</span><span class="pi">:</span>
+  <span class="na">REGISTRY</span><span class="pi">:</span> <span class="s">ghcr.io</span>
+  <span class="na">IMAGE_NAME</span><span class="pi">:</span> <span class="s">$</span>
+
+<span class="na">jobs</span><span class="pi">:</span>
+  <span class="na">build-and-push</span><span class="pi">:</span>
+    <span class="na">runs-on</span><span class="pi">:</span> <span class="s">ubuntu-latest</span>
+    <span class="na">permissions</span><span class="pi">:</span>
+      <span class="na">contents</span><span class="pi">:</span> <span class="s">read</span>
+      <span class="na">packages</span><span class="pi">:</span> <span class="s">write</span>
+
+    <span class="na">steps</span><span class="pi">:</span>
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">Checkout repository</span>
+      <span class="na">uses</span><span class="pi">:</span> <span class="s">actions/checkout@v3</span>
+
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">Log in to Container Registry</span>
+      <span class="na">uses</span><span class="pi">:</span> <span class="s">docker/login-action@v2</span>
+      <span class="na">with</span><span class="pi">:</span>
+        <span class="na">registry</span><span class="pi">:</span> <span class="s">$</span>
+        <span class="na">username</span><span class="pi">:</span> <span class="s">$</span>
+        <span class="na">password</span><span class="pi">:</span> <span class="s">$</span>
+
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">Extract metadata</span>
+      <span class="na">id</span><span class="pi">:</span> <span class="s">meta</span>
+      <span class="na">uses</span><span class="pi">:</span> <span class="s">docker/metadata-action@v4</span>
+      <span class="na">with</span><span class="pi">:</span>
+        <span class="na">images</span><span class="pi">:</span> <span class="s">$/$</span>
+        <span class="na">tags</span><span class="pi">:</span> <span class="pi">|</span>
+          <span class="s">type=ref,event=branch</span>
+          <span class="s">type=ref,event=pr</span>
+          <span class="s">type=sha,prefix=-</span>
+
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">Build and push Docker image</span>
+      <span class="na">uses</span><span class="pi">:</span> <span class="s">docker/build-push-action@v4</span>
+      <span class="na">with</span><span class="pi">:</span>
+        <span class="na">context</span><span class="pi">:</span> <span class="s">.</span>
+        <span class="na">push</span><span class="pi">:</span> <span class="no">true</span>
+        <span class="na">tags</span><span class="pi">:</span> <span class="s">$</span>
+        <span class="na">labels</span><span class="pi">:</span> <span class="s">$</span>
+
+    <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">Update deployment manifest</span>
+      <span class="na">if</span><span class="pi">:</span> <span class="s">github.ref == 'refs/heads/main'</span>
+      <span class="na">run</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s"># 克隆 fleet-infra 仓库</span>
+        <span class="s">git clone https://x-access-token:$@github.com/$/fleet-infra.git</span>
+        <span class="s">cd fleet-infra</span>
+
+        <span class="s"># 更新镜像标签</span>
+        <span class="s">sed -i "s|image: .*|image: $/$:$|g" apps/production/my-app.yaml</span>
+
+        <span class="s"># 提交更改</span>
+        <span class="s">git config user.name "GitHub Actions"</span>
+        <span class="s">git config user.email "actions@github.com"</span>
+        <span class="s">git add .</span>
+        <span class="s">git commit -m "Update image to $"</span>
+        <span class="s">git push</span>
+</code></pre></div></div>
+
+<h2 id="5-验证部署">5. 验证部署</h2>
+
+<h3 id="51-检查-flux-cd-状态">5.1 检查 Flux CD 状态</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 检查 Flux CD 组件状态</span>
+flux get all
+
+<span class="c"># 查看同步状态</span>
+flux get sources git
+flux get kustomizations
+</code></pre></div></div>
+
+<h3 id="52-监控应用程序部署">5.2 监控应用程序部署</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 查看应用程序 Pod 状态</span>
+kubectl get pods <span class="nt">-l</span> <span class="nv">app</span><span class="o">=</span>my-app
+
+<span class="c"># 查看部署历史</span>
+kubectl rollout <span class="nb">history </span>deployment/my-app
+
+<span class="c"># 查看 Flux CD 日志</span>
+kubectl logs <span class="nt">-n</span> flux-system deployment/source-controller
+kubectl logs <span class="nt">-n</span> flux-system deployment/kustomize-controller
+</code></pre></div></div>
+
+<h2 id="6-故障排除">6. 故障排除</h2>
+
+<h3 id="61-常见问题">6.1 常见问题</h3>
+
+<ol>
+  <li><strong>权限问题</strong>：确保 GitHub Token 具有足够的权限</li>
+  <li><strong>网络问题</strong>：检查集群是否能访问 GitHub</li>
+  <li><strong>镜像拉取失败</strong>：验证镜像仓库权限和网络连接</li>
+</ol>
+
+<h3 id="62-调试命令">6.2 调试命令</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 查看 Flux CD 事件</span>
+kubectl get events <span class="nt">-n</span> flux-system
+
+<span class="c"># 强制同步</span>
+flux reconcile <span class="nb">source </span>git flux-system
+flux reconcile kustomization flux-system
+
+<span class="c"># 暂停/恢复同步</span>
+flux <span class="nb">suspend </span>kustomization flux-system
+flux resume kustomization flux-system
+</code></pre></div></div>
+
+<h2 id="总结">总结</h2>
+
+<p>通过 GitHub Actions 和 Flux CD 的结合，我们实现了一个完整的 GitOps 工作流：</p>
+
+<ol>
+  <li><strong>代码提交</strong> → GitHub Actions 构建镜像</li>
+  <li><strong>镜像推送</strong> → 更新部署清单</li>
+  <li><strong>清单变更</strong> → Flux CD 自动同步到集群</li>
+  <li><strong>持续监控</strong> → 确保集群状态与 Git 仓库一致</li>
+</ol>
+
+<p>这种方式提供了：</p>
+<ul>
+  <li>🔄 <strong>自动化部署</strong>：减少手动操作</li>
+  <li>📝 <strong>版本控制</strong>：所有变更都有记录</li>
+  <li>🔒 <strong>安全性</strong>：通过 Git 权限控制部署</li>
+  <li>🎯 <strong>一致性</strong>：确保环境配置的一致性</li>
+</ul>
+
+<p>下一步可以考虑添加更多功能，如多环境部署、回滚策略、监控告警等。</p>
+
+  </div>
+
+  <p class="post-date text-bold">
+
+
+    <span class="text-upcase">January 2023</span>
+
+
+
+
+
+  (654 Words,
+  4 Minutes)
+
+
+</p>
+
+<div class="soopr-btn"
+   data-twitter="SooprCo"
+>
+</div>
+
+
+  <div class="">
+
+    <span class="tag">devops</span>
+
+    <span class="tag">kubernetes</span>
+
+    <span class="tag">fluxcd</span>
+
+    <span class="tag">cicd</span>
+
+    <span class="tag">github-actions</span>
+
+  </div>
+
+
+</article>
+
+    </div><script async defer src="https://sdk.soopr.co/soopr.js"></script></body>
+</html>

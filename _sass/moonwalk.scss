@@ -486,6 +486,29 @@ html {
   animation-delay: var(--delay);
 }
 
+/* Skip to content link */
+.skip-to-content {
+  position: fixed;
+  top: -100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent-primary);
+  color: white !important;
+  padding: 0.5rem 1rem;
+  z-index: 1001;
+  border-radius: 0 0 var(--radius-md) var(--radius-md);
+  font-weight: 500;
+  transition: top 0.2s ease;
+  border: none;
+  text-decoration: none;
+}
+
+.skip-to-content:focus {
+  top: 0;
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
 /* Focus styles for accessibility */
 *:focus-visible {
   outline: 2px solid var(--accent-primary);

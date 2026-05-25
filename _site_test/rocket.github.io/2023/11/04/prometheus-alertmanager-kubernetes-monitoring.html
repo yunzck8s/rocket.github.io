@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en" class="html" data-theme="dark"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>
+
+      Kubernetes集群监控告警：Prometheus AlertManager实战
+
+  </title>
+
+  <!-- Begin Jekyll SEO tag v2.7.3 -->
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="Kubernetes集群监控告警：Prometheus AlertManager实战" />
+<meta name="author" content="Rocket" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="场景：客户现场经常会出现服务资源不足，导致服务器down掉，需要接入预警通知。 环境： kubernetes v1.24.2 kube-prometheus-stack：v0.26.0" />
+<meta property="og:description" content="场景：客户现场经常会出现服务资源不足，导致服务器down掉，需要接入预警通知。 环境： kubernetes v1.24.2 kube-prometheus-stack：v0.26.0" />
+<link rel="canonical" href="https://yunzck8s.github.io/rocket.github.io/2023/11/04/prometheus-alertmanager-kubernetes-monitoring.html" />
+<meta property="og:url" content="https://yunzck8s.github.io/rocket.github.io/2023/11/04/prometheus-alertmanager-kubernetes-monitoring.html" />
+<meta property="og:site_name" content="DevOps技术博客" />
+<meta property="og:image" content="https://soopr.xyz/images/card?url=https://yunzck8s.github.io/rocket.github.io/2023/11/04/prometheus-alertmanager-kubernetes-monitoring.html" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-11-04T00:00:00+00:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="og:image" content="https://soopr.xyz/images/card?url=https://yunzck8s.github.io/rocket.github.io/2023/11/04/prometheus-alertmanager-kubernetes-monitoring.html" />
+<meta property="twitter:title" content="Kubernetes集群监控告警：Prometheus AlertManager实战" />
+<meta name="twitter:site" content="@abhinav" />
+<meta name="twitter:creator" content="@Rocket" />
+<script type="application/ld+json">
+{"author":{"@type":"Person","name":"Rocket"},"description":"场景：客户现场经常会出现服务资源不足，导致服务器down掉，需要接入预警通知。 环境： kubernetes v1.24.2 kube-prometheus-stack：v0.26.0","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://yunzck8s.github.io/rocket.github.io/2023/11/04/prometheus-alertmanager-kubernetes-monitoring.html"},"datePublished":"2023-11-04T00:00:00+00:00","headline":"Kubernetes集群监控告警：Prometheus AlertManager实战","url":"https://yunzck8s.github.io/rocket.github.io/2023/11/04/prometheus-alertmanager-kubernetes-monitoring.html","dateModified":"2023-11-04T00:00:00+00:00","@context":"https://schema.org"}</script>
+<script async defer data-soopr-token="" src="https://sdk.soopr.co/soopr.js"  ></script>
+<!-- End Jekyll SEO tag -->
+
+  <link type="application/atom+xml" rel="alternate" href="https://yunzck8s.github.io/rocket.github.io/feed.xml" title="DevOps技术博客" />
+
+  <!-- Favicon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="/assets/images/favicon/site.webmanifest">
+  <link rel="mask-icon" href="/assets/images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  <link rel="shortcut icon" href="/assets/images/favicon/favicon.ico">
+  <meta name="msapplication-TileColor" content="#00aba9">
+  <meta name="msapplication-config" content="/assets/images/favicon/browserconfig.xml">
+  <meta name="theme-color" content="#ffffff">
+  <!-- Favicon -->
+
+  <link rel="stylesheet" href="/rocket.github.io/assets/css/main.css" />
+
+    <script type="text/javascript">
+  window.addEventListener('load', themeChange);
+  const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : null;
+  if (currentTheme)
+    document.documentElement.setAttribute('data-theme', currentTheme);
+
+  function themeChange() {
+    let button = document.querySelector('.theme-toggle');
+
+    button.addEventListener('click', function (e) {
+      let currentTheme = document.documentElement.getAttribute('data-theme');
+      if (currentTheme === 'dark') {
+        transition();
+        document.documentElement.setAttribute('data-theme', 'light');
+        localStorage.setItem('theme', 'light');
+      } else {
+        transition();
+        document.documentElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+      }
+    });
+
+    let transition = () => {
+      document.documentElement.classList.add('transition');
+      window.setTimeout(() => {
+        document.documentElement.classList.remove('transition');
+      }, 1000);
+    }
+  }
+</script>
+
+
+
+</head>
+<body>
+    <a href="#main-content" class="skip-to-content">Skip to content</a>
+
+      <button title="Toggle Theme" class="theme-toggle" aria-label="Toggle Theme">
+  <svg viewBox="0 0 32 32" width="24" height="24" fill="currentcolor">
+    <circle cx="16" cy="16" r="14" fill="none" stroke="currentcolor" stroke-width="4"></circle>
+    <path d="
+             M 16 0
+             A 16 16 0 0 0 16 32
+             z">
+    </path>
+  </svg>
+</button>
+
+
+
+    <div id="main-content" tabindex="-1" class="container">
+      <article class="post">
+  <header class="post-header">
+    <a href="/rocket.github.io/" class="back-link">← home..</a>
+    <h1 class="post-title">Kubernetes集群监控告警：Prometheus AlertManager实战</h1>
+    <div class="post-meta">
+      <time datetime="2023-11-04T00:00:00+00:00">November 04, 2023</time>
+
+        <span class="reading-time">• 7 min read</span>
+
+    </div>
+
+      <div class="tags">
+
+          <span class="tag">devops</span>
+
+          <span class="tag">kubernetes</span>
+
+          <span class="tag">prometheus</span>
+
+          <span class="tag">alertmanager</span>
+
+          <span class="tag">monitoring</span>
+
+      </div>
+
+  </header>
+
+  <div class="post-content">
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>场景：客户现场经常会出现服务资源不足，导致服务器down掉，需要接入预警通知。
+环境：
+  kubernetes v1.24.2
+  kube-prometheus-stack：v0.26.0
+</code></pre></div></div>
+
+<h1 id="prometheus的概念">Prometheus的概念</h1>
+
+<p>在开始之前首先要清楚prometheus是什么。Prometheus 是一个开源的系统监控和告警工具包，最初由 SoundCloud 开发。它具有以下特点：</p>
+
+<ul>
+  <li><strong>多维数据模型</strong>：通过指标名称和键值对标识时间序列</li>
+  <li><strong>灵活的查询语言</strong>：PromQL 允许对收集的数据进行切片和切块</li>
+  <li><strong>不依赖分布式存储</strong>：单个服务器节点是自治的</li>
+  <li><strong>HTTP 拉取模型</strong>：通过 HTTP 协议收集时间序列数据</li>
+  <li><strong>支持推送网关</strong>：用于批处理作业</li>
+  <li><strong>通过服务发现或静态配置发现目标</strong></li>
+  <li><strong>多种图形和仪表板支持模式</strong></li>
+</ul>
+
+<h2 id="1-安装-kube-prometheus-stack">1. 安装 kube-prometheus-stack</h2>
+
+<p>使用 Helm 安装 kube-prometheus-stack，这是一个包含 Prometheus、AlertManager、Grafana 等组件的完整监控解决方案。</p>
+
+<h3 id="11-添加-helm-仓库">1.1 添加 Helm 仓库</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 添加 prometheus-community helm 仓库</span>
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+</code></pre></div></div>
+
+<h3 id="12-创建命名空间">1.2 创建命名空间</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl create namespace monitoring
+</code></pre></div></div>
+
+<h3 id="13-安装-kube-prometheus-stack">1.3 安装 kube-prometheus-stack</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>helm <span class="nb">install </span>kube-prometheus-stack prometheus-community/kube-prometheus-stack <span class="se">\</span>
+  <span class="nt">--namespace</span> monitoring <span class="se">\</span>
+  <span class="nt">--set</span> prometheus.prometheusSpec.serviceMonitorSelectorNilUsesHelmValues<span class="o">=</span><span class="nb">false</span> <span class="se">\</span>
+  <span class="nt">--set</span> prometheus.prometheusSpec.podMonitorSelectorNilUsesHelmValues<span class="o">=</span><span class="nb">false</span> <span class="se">\</span>
+  <span class="nt">--set</span> prometheus.prometheusSpec.ruleSelectorNilUsesHelmValues<span class="o">=</span><span class="nb">false</span>
+</code></pre></div></div>
+
+<h2 id="2-配置-alertmanager">2. 配置 AlertManager</h2>
+
+<h3 id="21-创建-alertmanager-配置">2.1 创建 AlertManager 配置</h3>
+
+<p>创建 <code class="language-plaintext highlighter-rouge">alertmanager-config.yaml</code> 文件：</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Secret</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">alertmanager-kube-prometheus-stack-alertmanager</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">monitoring</span>
+<span class="na">stringData</span><span class="pi">:</span>
+  <span class="s">alertmanager.yml</span><span class="pi">:</span> <span class="pi">|</span>
+    <span class="s">global:</span>
+      <span class="s">smtp_smarthost: 'smtp.gmail.com:587'</span>
+      <span class="s">smtp_from: 'your-email@gmail.com'</span>
+      <span class="s">smtp_auth_username: 'your-email@gmail.com'</span>
+      <span class="s">smtp_auth_password: 'your-app-password'</span>
+
+    <span class="s">route:</span>
+      <span class="s">group_by: ['alertname', 'cluster', 'service']</span>
+      <span class="s">group_wait: 10s</span>
+      <span class="s">group_interval: 10s</span>
+      <span class="s">repeat_interval: 1h</span>
+      <span class="s">receiver: 'web.hook'</span>
+      <span class="s">routes:</span>
+      <span class="s">- match:</span>
+          <span class="s">alertname: Watchdog</span>
+        <span class="s">receiver: 'null'</span>
+      <span class="s">- match:</span>
+          <span class="s">severity: critical</span>
+        <span class="s">receiver: 'critical-alerts'</span>
+      <span class="s">- match:</span>
+          <span class="s">severity: warning</span>
+        <span class="s">receiver: 'warning-alerts'</span>
+
+    <span class="s">receivers:</span>
+    <span class="s">- name: 'null'</span>
+
+    <span class="s">- name: 'web.hook'</span>
+      <span class="s">email_configs:</span>
+      <span class="s">- to: 'admin@company.com'</span>
+        <span class="s">subject: '[] '</span>
+        <span class="s">body: |</span>
+    <span class="no">      </span>
+          <span class="s">Alert: </span>
+          <span class="s">Description: </span>
+          <span class="s">Labels: = </span>
+    <span class="no">      </span>
+
+    <span class="s">- name: 'critical-alerts'</span>
+      <span class="s">email_configs:</span>
+      <span class="s">- to: 'critical-alerts@company.com'</span>
+        <span class="s">subject: '🚨 [CRITICAL] '</span>
+        <span class="s">body: |</span>
+          <span class="s">🚨 Critical Alert Triggered!</span>
+    <span class="no">      </span>
+    <span class="no">      </span>
+          <span class="s">Alert: </span>
+          <span class="s">Description: </span>
+          <span class="s">Severity: </span>
+          <span class="s">Instance: </span>
+          <span class="s">Time: </span>
+    <span class="no">      </span>
+    <span class="no">  </span>
+      <span class="s">webhook_configs:</span>
+      <span class="s">- url: 'http://webhook-service:8080/alerts'</span>
+        <span class="s">send_resolved: true</span>
+
+    <span class="s">- name: 'warning-alerts'</span>
+      <span class="s">email_configs:</span>
+      <span class="s">- to: 'warning-alerts@company.com'</span>
+        <span class="s">subject: '⚠️ [WARNING] '</span>
+        <span class="s">body: |</span>
+          <span class="s">⚠️ Warning Alert</span>
+    <span class="no">      </span>
+    <span class="no">      </span>
+          <span class="s">Alert: </span>
+          <span class="s">Description: </span>
+          <span class="s">Instance: </span>
+    <span class="no">      </span>
+</code></pre></div></div>
+
+<h3 id="22-应用配置">2.2 应用配置</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl apply <span class="nt">-f</span> alertmanager-config.yaml
+</code></pre></div></div>
+
+<h2 id="3-创建自定义告警规则">3. 创建自定义告警规则</h2>
+
+<h3 id="31-创建告警规则文件">3.1 创建告警规则文件</h3>
+
+<p>创建 <code class="language-plaintext highlighter-rouge">custom-alerts.yaml</code>：</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">monitoring.coreos.com/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">PrometheusRule</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">custom-alerts</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">monitoring</span>
+  <span class="na">labels</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">kube-prometheus-stack</span>
+    <span class="na">release</span><span class="pi">:</span> <span class="s">kube-prometheus-stack</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">groups</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">kubernetes-resources</span>
+    <span class="na">rules</span><span class="pi">:</span>
+
+    <span class="c1"># Pod CPU 使用率过高</span>
+    <span class="pi">-</span> <span class="na">alert</span><span class="pi">:</span> <span class="s">PodHighCPUUsage</span>
+      <span class="na">expr</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">(</span>
+          <span class="s">sum by (namespace, pod) (</span>
+            <span class="s">rate(container_cpu_usage_seconds_total{container!="POD",container!=""}[5m])</span>
+          <span class="s">) * 100</span>
+        <span class="s">) &gt; 80</span>
+      <span class="na">for</span><span class="pi">:</span> <span class="s">5m</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">severity</span><span class="pi">:</span> <span class="s">warning</span>
+      <span class="na">annotations</span><span class="pi">:</span>
+        <span class="na">summary</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Pod</span><span class="nv"> </span><span class="s">/</span><span class="nv"> </span><span class="s">CPU</span><span class="nv"> </span><span class="s">usage</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">high"</span>
+        <span class="na">description</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Pod</span><span class="nv"> </span><span class="s">/</span><span class="nv"> </span><span class="s">CPU</span><span class="nv"> </span><span class="s">usage</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">%</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">more</span><span class="nv"> </span><span class="s">than</span><span class="nv"> </span><span class="s">5</span><span class="nv"> </span><span class="s">minutes."</span>
+
+    <span class="c1"># Pod 内存使用率过高</span>
+    <span class="pi">-</span> <span class="na">alert</span><span class="pi">:</span> <span class="s">PodHighMemoryUsage</span>
+      <span class="na">expr</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">(</span>
+          <span class="s">sum by (namespace, pod) (</span>
+            <span class="s">container_memory_working_set_bytes{container!="POD",container!=""}</span>
+          <span class="s">) / sum by (namespace, pod) (</span>
+            <span class="s">container_spec_memory_limit_bytes{container!="POD",container!=""} &gt; 0</span>
+          <span class="s">) * 100</span>
+        <span class="s">) &gt; 80</span>
+      <span class="na">for</span><span class="pi">:</span> <span class="s">5m</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">severity</span><span class="pi">:</span> <span class="s">warning</span>
+      <span class="na">annotations</span><span class="pi">:</span>
+        <span class="na">summary</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Pod</span><span class="nv"> </span><span class="s">/</span><span class="nv"> </span><span class="s">memory</span><span class="nv"> </span><span class="s">usage</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">high"</span>
+        <span class="na">description</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Pod</span><span class="nv"> </span><span class="s">/</span><span class="nv"> </span><span class="s">memory</span><span class="nv"> </span><span class="s">usage</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">%</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">more</span><span class="nv"> </span><span class="s">than</span><span class="nv"> </span><span class="s">5</span><span class="nv"> </span><span class="s">minutes."</span>
+
+    <span class="c1"># Pod 重启频繁</span>
+    <span class="pi">-</span> <span class="na">alert</span><span class="pi">:</span> <span class="s">PodCrashLooping</span>
+      <span class="na">expr</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">rate(kube_pod_container_status_restarts_total[15m]) * 60 * 15 &gt; 0</span>
+      <span class="na">for</span><span class="pi">:</span> <span class="s">0m</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">severity</span><span class="pi">:</span> <span class="s">critical</span>
+      <span class="na">annotations</span><span class="pi">:</span>
+        <span class="na">summary</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Pod</span><span class="nv"> </span><span class="s">/</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">crash</span><span class="nv"> </span><span class="s">looping"</span>
+        <span class="na">description</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Pod</span><span class="nv"> </span><span class="s">/</span><span class="nv"> </span><span class="s">has</span><span class="nv"> </span><span class="s">restarted</span><span class="nv">  </span><span class="s">times</span><span class="nv"> </span><span class="s">in</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">last</span><span class="nv"> </span><span class="s">15</span><span class="nv"> </span><span class="s">minutes."</span>
+
+    <span class="c1"># 节点磁盘空间不足</span>
+    <span class="pi">-</span> <span class="na">alert</span><span class="pi">:</span> <span class="s">NodeDiskSpaceFillingUp</span>
+      <span class="na">expr</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">(</span>
+          <span class="s">node_filesystem_avail_bytes{fstype!="tmpfs"} / node_filesystem_size_bytes{fstype!="tmpfs"} * 100 &lt; 10</span>
+          <span class="s">and</span>
+          <span class="s">predict_linear(node_filesystem_avail_bytes{fstype!="tmpfs"}[6h], 24*60*60) &lt; 0</span>
+          <span class="s">and</span>
+          <span class="s">node_filesystem_readonly{fstype!="tmpfs"} == 0</span>
+        <span class="s">)</span>
+      <span class="na">for</span><span class="pi">:</span> <span class="s">1h</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">severity</span><span class="pi">:</span> <span class="s">warning</span>
+      <span class="na">annotations</span><span class="pi">:</span>
+        <span class="na">summary</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Node</span><span class="nv">  </span><span class="s">disk</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">filling</span><span class="nv"> </span><span class="s">up"</span>
+        <span class="na">description</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Filesystem</span><span class="nv"> </span><span class="s">on</span><span class="nv">  </span><span class="s">at</span><span class="nv">  </span><span class="s">has</span><span class="nv"> </span><span class="s">only</span><span class="nv"> </span><span class="s">%</span><span class="nv"> </span><span class="s">available</span><span class="nv"> </span><span class="s">space</span><span class="nv"> </span><span class="s">left</span><span class="nv"> </span><span class="s">and</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">filling</span><span class="nv"> </span><span class="s">up."</span>
+
+    <span class="c1"># 节点内存使用率过高</span>
+    <span class="pi">-</span> <span class="na">alert</span><span class="pi">:</span> <span class="s">NodeHighMemoryUsage</span>
+      <span class="na">expr</span><span class="pi">:</span> <span class="pi">|</span>
+        <span class="s">(</span>
+          <span class="s">(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 &gt; 90</span>
+        <span class="s">)</span>
+      <span class="na">for</span><span class="pi">:</span> <span class="s">5m</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">severity</span><span class="pi">:</span> <span class="s">critical</span>
+      <span class="na">annotations</span><span class="pi">:</span>
+        <span class="na">summary</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Node</span><span class="nv">  </span><span class="s">memory</span><span class="nv"> </span><span class="s">usage</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">high"</span>
+        <span class="na">description</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Node</span><span class="nv">  </span><span class="s">memory</span><span class="nv"> </span><span class="s">usage</span><span class="nv"> </span><span class="s">is</span><span class="nv"> </span><span class="s">%</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">more</span><span class="nv"> </span><span class="s">than</span><span class="nv"> </span><span class="s">5</span><span class="nv"> </span><span class="s">minutes."</span>
+
+    <span class="c1"># 服务不可用</span>
+    <span class="pi">-</span> <span class="na">alert</span><span class="pi">:</span> <span class="s">ServiceDown</span>
+      <span class="na">expr</span><span class="pi">:</span> <span class="s">up == </span><span class="m">0</span>
+      <span class="na">for</span><span class="pi">:</span> <span class="s">5m</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">severity</span><span class="pi">:</span> <span class="s">critical</span>
+      <span class="na">annotations</span><span class="pi">:</span>
+        <span class="na">summary</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Service</span><span class="nv">  </span><span class="s">is</span><span class="nv"> </span><span class="s">down"</span>
+        <span class="na">description</span><span class="pi">:</span> <span class="s2">"</span><span class="s">Service</span><span class="nv">  </span><span class="s">on</span><span class="nv">  </span><span class="s">has</span><span class="nv"> </span><span class="s">been</span><span class="nv"> </span><span class="s">down</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">more</span><span class="nv"> </span><span class="s">than</span><span class="nv"> </span><span class="s">5</span><span class="nv"> </span><span class="s">minutes."</span>
+</code></pre></div></div>
+
+<h3 id="32-应用告警规则">3.2 应用告警规则</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl apply <span class="nt">-f</span> custom-alerts.yaml
+</code></pre></div></div>
+
+<h2 id="4-配置钉钉企业微信通知">4. 配置钉钉/企业微信通知</h2>
+
+<h3 id="41-创建-webhook-服务">4.1 创建 Webhook 服务</h3>
+
+<p>创建一个简单的 webhook 服务来处理钉钉通知：</p>
+
+<div class="language-yaml highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="na">apiVersion</span><span class="pi">:</span> <span class="s">apps/v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Deployment</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">alert-webhook</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">monitoring</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">replicas</span><span class="pi">:</span> <span class="m">1</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">matchLabels</span><span class="pi">:</span>
+      <span class="na">app</span><span class="pi">:</span> <span class="s">alert-webhook</span>
+  <span class="na">template</span><span class="pi">:</span>
+    <span class="na">metadata</span><span class="pi">:</span>
+      <span class="na">labels</span><span class="pi">:</span>
+        <span class="na">app</span><span class="pi">:</span> <span class="s">alert-webhook</span>
+    <span class="na">spec</span><span class="pi">:</span>
+      <span class="na">containers</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">webhook</span>
+        <span class="na">image</span><span class="pi">:</span> <span class="s">timonwong/prometheus-webhook-dingtalk:v2.1.0</span>
+        <span class="na">ports</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">containerPort</span><span class="pi">:</span> <span class="m">8060</span>
+        <span class="na">env</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">DINGTALK_WEBHOOK</span>
+          <span class="na">value</span><span class="pi">:</span> <span class="s2">"</span><span class="s">https://oapi.dingtalk.com/robot/send?access_token=YOUR_TOKEN"</span>
+        <span class="na">args</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="s">--web.listen-address=:8060</span>
+        <span class="pi">-</span> <span class="s">--config.file=/etc/prometheus-webhook-dingtalk/config.yml</span>
+        <span class="na">volumeMounts</span><span class="pi">:</span>
+        <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">config</span>
+          <span class="na">mountPath</span><span class="pi">:</span> <span class="s">/etc/prometheus-webhook-dingtalk</span>
+      <span class="na">volumes</span><span class="pi">:</span>
+      <span class="pi">-</span> <span class="na">name</span><span class="pi">:</span> <span class="s">config</span>
+        <span class="na">configMap</span><span class="pi">:</span>
+          <span class="na">name</span><span class="pi">:</span> <span class="s">webhook-config</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">Service</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">alert-webhook</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">monitoring</span>
+<span class="na">spec</span><span class="pi">:</span>
+  <span class="na">selector</span><span class="pi">:</span>
+    <span class="na">app</span><span class="pi">:</span> <span class="s">alert-webhook</span>
+  <span class="na">ports</span><span class="pi">:</span>
+  <span class="pi">-</span> <span class="na">port</span><span class="pi">:</span> <span class="m">8060</span>
+    <span class="na">targetPort</span><span class="pi">:</span> <span class="m">8060</span>
+<span class="nn">---</span>
+<span class="na">apiVersion</span><span class="pi">:</span> <span class="s">v1</span>
+<span class="na">kind</span><span class="pi">:</span> <span class="s">ConfigMap</span>
+<span class="na">metadata</span><span class="pi">:</span>
+  <span class="na">name</span><span class="pi">:</span> <span class="s">webhook-config</span>
+  <span class="na">namespace</span><span class="pi">:</span> <span class="s">monitoring</span>
+<span class="na">data</span><span class="pi">:</span>
+  <span class="s">config.yml</span><span class="pi">:</span> <span class="pi">|</span>
+    <span class="s">templates:</span>
+      <span class="s">- /etc/prometheus-webhook-dingtalk/template.tmpl</span>
+    <span class="s">targets:</span>
+      <span class="s">webhook:</span>
+        <span class="s">url: https://oapi.dingtalk.com/robot/send?access_token=YOUR_TOKEN</span>
+        <span class="s">secret: YOUR_SECRET</span>
+  <span class="s">template.tmpl</span><span class="pi">:</span> <span class="pi">|</span>
+
+    <span class="s">=========== 监控报警 ===========</span>
+    <span class="s">告警名称: </span>
+    <span class="s">告警级别: </span>
+    <span class="s">告警机器: </span>
+    <span class="s">告警详情: </span>
+    <span class="s">告警时间: </span>
+    <span class="s">=============================</span>
+    <span class="s">=========== 告警恢复 ===========</span>
+    <span class="s">告警名称: </span>
+    <span class="s">告警机器: </span>
+    <span class="s">告警详情: </span>
+    <span class="s">恢复时间: </span>
+    <span class="s">=============================</span>
+
+</code></pre></div></div>
+
+<h2 id="5-验证和测试">5. 验证和测试</h2>
+
+<h3 id="51-检查组件状态">5.1 检查组件状态</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 检查 Prometheus 状态</span>
+kubectl get pods <span class="nt">-n</span> monitoring | <span class="nb">grep </span>prometheus
+
+<span class="c"># 检查 AlertManager 状态</span>
+kubectl get pods <span class="nt">-n</span> monitoring | <span class="nb">grep </span>alertmanager
+
+<span class="c"># 查看告警规则</span>
+kubectl get prometheusrules <span class="nt">-n</span> monitoring
+</code></pre></div></div>
+
+<h3 id="52-访问-web-界面">5.2 访问 Web 界面</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 端口转发访问 Prometheus</span>
+kubectl port-forward <span class="nt">-n</span> monitoring svc/kube-prometheus-stack-prometheus 9090:9090
+
+<span class="c"># 端口转发访问 AlertManager</span>
+kubectl port-forward <span class="nt">-n</span> monitoring svc/kube-prometheus-stack-alertmanager 9093:9093
+
+<span class="c"># 端口转发访问 Grafana</span>
+kubectl port-forward <span class="nt">-n</span> monitoring svc/kube-prometheus-stack-grafana 3000:80
+</code></pre></div></div>
+
+<h3 id="53-测试告警">5.3 测试告警</h3>
+
+<p>创建一个高 CPU 使用率的测试 Pod：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>kubectl run cpu-stress <span class="nt">--image</span><span class="o">=</span>progrium/stress <span class="nt">--</span> stress <span class="nt">--cpu</span> 2 <span class="nt">--timeout</span> 300s
+</code></pre></div></div>
+
+<h2 id="6-故障排除">6. 故障排除</h2>
+
+<h3 id="61-常见问题">6.1 常见问题</h3>
+
+<ol>
+  <li><strong>告警规则不生效</strong>：检查 PrometheusRule 的 labels 是否正确</li>
+  <li><strong>邮件发送失败</strong>：验证 SMTP 配置和网络连接</li>
+  <li><strong>Webhook 调用失败</strong>：检查 webhook 服务状态和网络策略</li>
+</ol>
+
+<h3 id="62-调试命令">6.2 调试命令</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 查看 Prometheus 配置</span>
+kubectl get prometheus <span class="nt">-n</span> monitoring <span class="nt">-o</span> yaml
+
+<span class="c"># 查看 AlertManager 日志</span>
+kubectl logs <span class="nt">-n</span> monitoring alertmanager-kube-prometheus-stack-alertmanager-0
+
+<span class="c"># 查看告警状态</span>
+curl http://localhost:9093/api/v1/alerts
+
+<span class="c"># 测试告警规则</span>
+curl <span class="nt">-X</span> POST http://localhost:9093/api/v1/alerts
+</code></pre></div></div>
+
+<h2 id="总结">总结</h2>
+
+<p>通过本文的配置，我们实现了一个完整的 Kubernetes 集群监控告警系统：</p>
+
+<ol>
+  <li><strong>📊 监控覆盖</strong>：CPU、内存、磁盘、网络等关键指标</li>
+  <li><strong>🚨 多级告警</strong>：warning 和 critical 不同级别的告警</li>
+  <li><strong>📧 多渠道通知</strong>：邮件、钉钉、企业微信等</li>
+  <li><strong>🔧 自定义规则</strong>：根据业务需求定制告警规则</li>
+  <li><strong>📈 可视化展示</strong>：通过 Grafana 展示监控数据</li>
+</ol>
+
+<p>这套监控系统能够帮助运维团队：</p>
+<ul>
+  <li>⚡ <strong>快速响应</strong>：及时发现和处理问题</li>
+  <li>🎯 <strong>精准定位</strong>：详细的告警信息帮助快速定位问题</li>
+  <li>📊 <strong>趋势分析</strong>：通过历史数据分析系统性能趋势</li>
+  <li>🛡️ <strong>预防故障</strong>：提前预警避免系统宕机</li>
+</ul>
+
+<p>建议根据实际业务场景调整告警阈值和通知策略，确保告警的有效性和及时性。</p>
+
+  </div>
+
+  <p class="post-date text-bold">
+
+
+    <span class="text-upcase">November 2023</span>
+
+
+
+
+
+  (1410 Words,
+  8 Minutes)
+
+
+</p>
+
+<div class="soopr-btn"
+   data-twitter="SooprCo"
+>
+</div>
+
+
+  <div class="">
+
+    <span class="tag">devops</span>
+
+    <span class="tag">kubernetes</span>
+
+    <span class="tag">prometheus</span>
+
+    <span class="tag">alertmanager</span>
+
+    <span class="tag">monitoring</span>
+
+  </div>
+
+
+</article>
+
+    </div><script async defer src="https://sdk.soopr.co/soopr.js"></script></body>
+</html>

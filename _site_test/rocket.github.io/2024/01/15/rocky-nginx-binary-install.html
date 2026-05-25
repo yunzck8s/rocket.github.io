@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en" class="html" data-theme="dark"><head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>
+
+      Rocky Linux 二进制安装 Nginx 完整指南
+
+  </title>
+
+  <!-- Begin Jekyll SEO tag v2.7.3 -->
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="Rocky Linux 二进制安装 Nginx 完整指南" />
+<meta name="author" content="DevOps Engineer" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="在生产环境中，有时我们需要通过二进制包的方式安装 Nginx，以获得更好的性能和自定义配置。本文将详细介绍在 Rocky Linux 系统上如何进行 Nginx 的二进制安装，并配置 systemd 服务管理和 logrotate 日志轮转。" />
+<meta property="og:description" content="在生产环境中，有时我们需要通过二进制包的方式安装 Nginx，以获得更好的性能和自定义配置。本文将详细介绍在 Rocky Linux 系统上如何进行 Nginx 的二进制安装，并配置 systemd 服务管理和 logrotate 日志轮转。" />
+<link rel="canonical" href="https://yunzck8s.github.io/rocket.github.io/2024/01/15/rocky-nginx-binary-install.html" />
+<meta property="og:url" content="https://yunzck8s.github.io/rocket.github.io/2024/01/15/rocky-nginx-binary-install.html" />
+<meta property="og:site_name" content="DevOps技术博客" />
+<meta property="og:image" content="https://yunzck8s.github.io/rocket.github.io/images/nginx-logo.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2024-01-15T00:00:00+00:00" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta property="twitter:image" content="https://yunzck8s.github.io/rocket.github.io/images/nginx-logo.png" />
+<meta property="twitter:title" content="Rocky Linux 二进制安装 Nginx 完整指南" />
+<meta name="twitter:site" content="@abhinav" />
+<meta name="twitter:creator" content="@DevOps Engineer" />
+<script type="application/ld+json">
+{"image":"https://yunzck8s.github.io/rocket.github.io/images/nginx-logo.png","author":{"@type":"Person","name":"DevOps Engineer"},"description":"在生产环境中，有时我们需要通过二进制包的方式安装 Nginx，以获得更好的性能和自定义配置。本文将详细介绍在 Rocky Linux 系统上如何进行 Nginx 的二进制安装，并配置 systemd 服务管理和 logrotate 日志轮转。","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://yunzck8s.github.io/rocket.github.io/2024/01/15/rocky-nginx-binary-install.html"},"datePublished":"2024-01-15T00:00:00+00:00","headline":"Rocky Linux 二进制安装 Nginx 完整指南","url":"https://yunzck8s.github.io/rocket.github.io/2024/01/15/rocky-nginx-binary-install.html","dateModified":"2024-01-15T00:00:00+00:00","@context":"https://schema.org"}</script>
+<script async defer data-soopr-token="" src="https://sdk.soopr.co/soopr.js"  ></script>
+<!-- End Jekyll SEO tag -->
+
+  <link type="application/atom+xml" rel="alternate" href="https://yunzck8s.github.io/rocket.github.io/feed.xml" title="DevOps技术博客" />
+
+  <!-- Favicon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/favicon/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/favicon/favicon-16x16.png">
+  <link rel="manifest" href="/assets/images/favicon/site.webmanifest">
+  <link rel="mask-icon" href="/assets/images/favicon/safari-pinned-tab.svg" color="#5bbad5">
+  <link rel="shortcut icon" href="/assets/images/favicon/favicon.ico">
+  <meta name="msapplication-TileColor" content="#00aba9">
+  <meta name="msapplication-config" content="/assets/images/favicon/browserconfig.xml">
+  <meta name="theme-color" content="#ffffff">
+  <!-- Favicon -->
+
+  <link rel="stylesheet" href="/rocket.github.io/assets/css/main.css" />
+
+    <script type="text/javascript">
+  window.addEventListener('load', themeChange);
+  const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : null;
+  if (currentTheme)
+    document.documentElement.setAttribute('data-theme', currentTheme);
+
+  function themeChange() {
+    let button = document.querySelector('.theme-toggle');
+
+    button.addEventListener('click', function (e) {
+      let currentTheme = document.documentElement.getAttribute('data-theme');
+      if (currentTheme === 'dark') {
+        transition();
+        document.documentElement.setAttribute('data-theme', 'light');
+        localStorage.setItem('theme', 'light');
+      } else {
+        transition();
+        document.documentElement.setAttribute('data-theme', 'dark');
+        localStorage.setItem('theme', 'dark');
+      }
+    });
+
+    let transition = () => {
+      document.documentElement.classList.add('transition');
+      window.setTimeout(() => {
+        document.documentElement.classList.remove('transition');
+      }, 1000);
+    }
+  }
+</script>
+
+
+
+</head>
+<body>
+    <a href="#main-content" class="skip-to-content">Skip to content</a>
+
+      <button title="Toggle Theme" class="theme-toggle" aria-label="Toggle Theme">
+  <svg viewBox="0 0 32 32" width="24" height="24" fill="currentcolor">
+    <circle cx="16" cy="16" r="14" fill="none" stroke="currentcolor" stroke-width="4"></circle>
+    <path d="
+             M 16 0
+             A 16 16 0 0 0 16 32
+             z">
+    </path>
+  </svg>
+</button>
+
+
+
+    <div id="main-content" tabindex="-1" class="container">
+      <article class="post">
+  <header class="post-header">
+    <a href="/rocket.github.io/" class="back-link">← home..</a>
+    <h1 class="post-title">Rocky Linux 二进制安装 Nginx 完整指南</h1>
+    <div class="post-meta">
+      <time datetime="2024-01-15T00:00:00+00:00">January 15, 2024</time>
+
+        <span class="reading-time">• 11 min read</span>
+
+    </div>
+
+      <div class="tags">
+
+          <span class="tag">nginx</span>
+
+          <span class="tag">rocky</span>
+
+          <span class="tag">systemd</span>
+
+          <span class="tag">logrotate</span>
+
+          <span class="tag">binary</span>
+
+      </div>
+
+  </header>
+
+  <div class="post-content">
+    <p>在生产环境中，有时我们需要通过二进制包的方式安装 Nginx，以获得更好的性能和自定义配置。本文将详细介绍在 Rocky Linux 系统上如何进行 Nginx 的二进制安装，并配置 systemd 服务管理和 logrotate 日志轮转。</p>
+
+<h2 id="环境信息">环境信息</h2>
+
+<ul>
+  <li><strong>操作系统</strong>: Rocky Linux 8/9</li>
+  <li><strong>Nginx 版本</strong>: 1.24.0 (stable)</li>
+  <li><strong>安装方式</strong>: 二进制编译安装</li>
+  <li><strong>服务管理</strong>: systemd</li>
+  <li><strong>日志管理</strong>: logrotate</li>
+</ul>
+
+<h2 id="1-系统准备">1. 系统准备</h2>
+
+<h3 id="11-更新系统">1.1 更新系统</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 更新系统包</span>
+<span class="nb">sudo </span>dnf update <span class="nt">-y</span>
+
+<span class="c"># 安装必要的开发工具</span>
+<span class="nb">sudo </span>dnf groupinstall <span class="s2">"Development Tools"</span> <span class="nt">-y</span>
+
+<span class="c"># 安装编译依赖</span>
+<span class="nb">sudo </span>dnf <span class="nb">install</span> <span class="nt">-y</span> pcre-devel zlib-devel openssl-devel wget gcc gcc-c++ make
+</code></pre></div></div>
+
+<h3 id="12-创建-nginx-用户">1.2 创建 nginx 用户</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 创建 nginx 系统用户</span>
+<span class="nb">sudo </span>useradd <span class="nt">-r</span> <span class="nt">-s</span> /sbin/nologin <span class="nt">-d</span> /var/cache/nginx <span class="nt">-c</span> <span class="s2">"nginx user"</span> nginx
+</code></pre></div></div>
+
+<h3 id="13-创建必要目录">1.3 创建必要目录</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 创建 nginx 安装目录</span>
+<span class="nb">sudo mkdir</span> <span class="nt">-p</span> /data/nginx/<span class="o">{</span>conf,logs,client_temp,proxy_temp,fastcgi_temp,uwsgi_temp,scgi_temp<span class="o">}</span>
+<span class="nb">sudo mkdir</span> <span class="nt">-p</span> /data/nginx/html
+</code></pre></div></div>
+
+<h2 id="2-下载和编译-nginx">2. 下载和编译 Nginx</h2>
+
+<h3 id="21-下载-nginx-源码">2.1 下载 Nginx 源码</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 切换到临时目录</span>
+<span class="nb">cd</span> /tmp
+
+<span class="c"># 下载 Nginx 源码</span>
+wget http://nginx.org/download/nginx-1.28.0.tar.gz
+<span class="nb">tar</span> <span class="nt">-zxvf</span> nginx-1.28.0.tar.gz
+<span class="nb">cd </span>nginx-1.28.0
+</code></pre></div></div>
+
+<h3 id="22-配置编译选项">2.2 配置编译选项</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 配置编译参数（安装到 /data 目录）</span>
+./configure <span class="se">\</span>
+  <span class="nt">--prefix</span><span class="o">=</span>/data/nginx <span class="se">\</span>
+  <span class="nt">--sbin-path</span><span class="o">=</span>/data/nginx/sbin/nginx <span class="se">\</span>
+  <span class="nt">--modules-path</span><span class="o">=</span>/data/nginx/modules <span class="se">\</span>
+  <span class="nt">--conf-path</span><span class="o">=</span>/data/nginx/conf/nginx.conf <span class="se">\</span>
+  <span class="nt">--error-log-path</span><span class="o">=</span>/data/nginx/logs/error.log <span class="se">\</span>
+  <span class="nt">--http-log-path</span><span class="o">=</span>/data/nginx/logs/access.log <span class="se">\</span>
+  <span class="nt">--pid-path</span><span class="o">=</span>/data/nginx/logs/nginx.pid <span class="se">\</span>
+  <span class="nt">--lock-path</span><span class="o">=</span>/data/nginx/logs/nginx.lock <span class="se">\</span>
+  <span class="nt">--http-client-body-temp-path</span><span class="o">=</span>/data/nginx/client_temp <span class="se">\</span>
+  <span class="nt">--http-proxy-temp-path</span><span class="o">=</span>/data/nginx/proxy_temp <span class="se">\</span>
+  <span class="nt">--http-fastcgi-temp-path</span><span class="o">=</span>/data/nginx/fastcgi_temp <span class="se">\</span>
+  <span class="nt">--http-uwsgi-temp-path</span><span class="o">=</span>/data/nginx/uwsgi_temp <span class="se">\</span>
+  <span class="nt">--http-scgi-temp-path</span><span class="o">=</span>/data/nginx/scgi_temp <span class="se">\</span>
+  <span class="nt">--user</span><span class="o">=</span>nginx <span class="se">\</span>
+  <span class="nt">--group</span><span class="o">=</span>nginx <span class="se">\</span>
+  <span class="nt">--with-compat</span> <span class="se">\</span>
+  <span class="nt">--with-file-aio</span> <span class="se">\</span>
+  <span class="nt">--with-threads</span> <span class="se">\</span>
+  <span class="nt">--with-http_addition_module</span> <span class="se">\</span>
+  <span class="nt">--with-http_auth_request_module</span> <span class="se">\</span>
+  <span class="nt">--with-http_dav_module</span> <span class="se">\</span>
+  <span class="nt">--with-http_flv_module</span> <span class="se">\</span>
+  <span class="nt">--with-http_gunzip_module</span> <span class="se">\</span>
+  <span class="nt">--with-http_gzip_static_module</span> <span class="se">\</span>
+  <span class="nt">--with-http_mp4_module</span> <span class="se">\</span>
+  <span class="nt">--with-http_random_index_module</span> <span class="se">\</span>
+  <span class="nt">--with-http_realip_module</span> <span class="se">\</span>
+  <span class="nt">--with-http_secure_link_module</span> <span class="se">\</span>
+  <span class="nt">--with-http_slice_module</span> <span class="se">\</span>
+  <span class="nt">--with-http_ssl_module</span> <span class="se">\</span>
+  <span class="nt">--with-http_stub_status_module</span> <span class="se">\</span>
+  <span class="nt">--with-http_sub_module</span> <span class="se">\</span>
+  <span class="nt">--with-http_v2_module</span> <span class="se">\</span>
+  <span class="nt">--with-mail</span> <span class="se">\</span>
+  <span class="nt">--with-mail_ssl_module</span> <span class="se">\</span>
+  <span class="nt">--with-stream</span> <span class="se">\</span>
+  <span class="nt">--with-stream_realip_module</span> <span class="se">\</span>
+  <span class="nt">--with-stream_ssl_module</span> <span class="se">\</span>
+  <span class="nt">--with-stream_ssl_preread_module</span>
+</code></pre></div></div>
+
+<h3 id="23-编译和安装">2.3 编译和安装</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 编译 (使用多核心加速)</span>
+make <span class="nt">-j</span><span class="si">$(</span><span class="nb">nproc</span><span class="si">)</span>
+
+<span class="c"># 安装</span>
+<span class="nb">sudo </span>make <span class="nb">install</span>
+
+<span class="c"># 验证安装</span>
+nginx <span class="nt">-v</span>
+</code></pre></div></div>
+
+<h2 id="3-配置-nginx">3. 配置 Nginx</h2>
+
+<h3 id="31-优化默认配置文件">3.1 优化默认配置文件</h3>
+
+<p>安装完成后，Nginx 会在 <code class="language-plaintext highlighter-rouge">/data/nginx/conf/</code> 目录下生成默认的配置文件。我们需要对默认的 <code class="language-plaintext highlighter-rouge">nginx.conf</code> 进行优化，主要是完善日志格式：</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 备份原配置文件</span>
+<span class="nb">sudo cp</span> /data/nginx/conf/nginx.conf /data/nginx/conf/nginx.conf.bak
+
+<span class="c"># 修改默认配置文件，添加完善的日志格式</span>
+<span class="nb">sudo tee</span> /data/nginx/conf/nginx.conf <span class="o">&gt;</span> /dev/null <span class="o">&lt;&lt;</span><span class="sh">'</span><span class="no">EOF</span><span class="sh">'
+#user  nobody;
+worker_processes  auto;
+
+#error_log  logs/error.log;
+#error_log  logs/error.log  notice;
+error_log  logs/error.log  info;
+
+#pid        logs/nginx.pid;
+
+events {
+    worker_connections  1024;
+    use epoll;
+    multi_accept on;
+}
+
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+
+    # 完善的日志格式定义
+    log_format  main  '</span><span class="nv">$remote_addr</span><span class="sh"> - </span><span class="nv">$remote_user</span><span class="sh"> [</span><span class="nv">$time_local</span><span class="sh">] "</span><span class="nv">$request</span><span class="sh">" '
+                      '</span><span class="nv">$status</span><span class="sh"> </span><span class="nv">$body_bytes_sent</span><span class="sh"> "</span><span class="nv">$http_referer</span><span class="sh">" '
+                      '"</span><span class="nv">$http_user_agent</span><span class="sh">" "</span><span class="nv">$http_x_forwarded_for</span><span class="sh">"';
+
+    # 详细的日志格式，包含更多信息
+    log_format  detailed  '</span><span class="nv">$remote_addr</span><span class="sh"> - </span><span class="nv">$remote_user</span><span class="sh"> [</span><span class="nv">$time_local</span><span class="sh">] "</span><span class="nv">$request</span><span class="sh">" '
+                         '</span><span class="nv">$status</span><span class="sh"> </span><span class="nv">$body_bytes_sent</span><span class="sh"> "</span><span class="nv">$http_referer</span><span class="sh">" '
+                         '"</span><span class="nv">$http_user_agent</span><span class="sh">" "</span><span class="nv">$http_x_forwarded_for</span><span class="sh">" '
+                         '</span><span class="nv">$request_time</span><span class="sh"> </span><span class="nv">$upstream_response_time</span><span class="sh"> '
+                         '"</span><span class="nv">$upstream_addr</span><span class="sh">" </span><span class="nv">$upstream_status</span><span class="sh"> '
+                         '</span><span class="nv">$connection</span><span class="sh"> </span><span class="nv">$connection_requests</span><span class="sh">';
+
+    # JSON 格式日志，便于日志分析
+    log_format json escape=json
+    '{
+        "timestamp": "</span><span class="nv">$time_iso8601</span><span class="sh">",
+        "remote_addr": "</span><span class="nv">$remote_addr</span><span class="sh">",
+        "remote_user": "</span><span class="nv">$remote_user</span><span class="sh">",
+        "request": "</span><span class="nv">$request</span><span class="sh">",
+        "status": </span><span class="nv">$status</span><span class="sh">,
+        "body_bytes_sent": </span><span class="nv">$body_bytes_sent</span><span class="sh">,
+        "http_referer": "</span><span class="nv">$http_referer</span><span class="sh">",
+        "http_user_agent": "</span><span class="nv">$http_user_agent</span><span class="sh">",
+        "http_x_forwarded_for": "</span><span class="nv">$http_x_forwarded_for</span><span class="sh">",
+        "request_time": </span><span class="nv">$request_time</span><span class="sh">,
+        "upstream_response_time": "</span><span class="nv">$upstream_response_time</span><span class="sh">",
+        "upstream_addr": "</span><span class="nv">$upstream_addr</span><span class="sh">",
+        "upstream_status": "</span><span class="nv">$upstream_status</span><span class="sh">",
+        "connection": </span><span class="nv">$connection</span><span class="sh">,
+        "connection_requests": </span><span class="nv">$connection_requests</span><span class="sh">
+    }';
+
+    # 使用详细格式记录访问日志
+    access_log  logs/access.log  detailed;
+
+    # 可选：同时记录 JSON 格式日志
+    # access_log  logs/access.json  json;
+
+    sendfile        on;
+    tcp_nopush      on;
+    tcp_nodelay     on;
+
+    keepalive_timeout  65;
+
+    # Gzip 压缩配置
+    gzip  on;
+    gzip_vary on;
+    gzip_min_length 1k;
+    gzip_comp_level 6;
+    gzip_types
+        text/plain
+        text/css
+        text/xml
+        text/javascript
+        application/json
+        application/javascript
+        application/xml+rss
+        application/atom+xml
+        image/svg+xml;
+
+    server {
+        listen       80;
+        server_name  localhost;
+
+        #charset koi8-r;
+
+        # 为这个虚拟主机单独配置访问日志
+        access_log  logs/host.access.log  main;
+
+        location / {
+            root   html;
+            index  index.html index.htm;
+        }
+
+        # 状态监控页面
+        location /nginx_status {
+            stub_status on;
+            access_log off;
+            allow 127.0.0.1;
+            deny all;
+        }
+
+        #error_page  404              /404.html;
+
+        # redirect server error pages to the static page /50x.html
+        #
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+
+        # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+        #
+        #location ~ </span><span class="se">\.</span><span class="sh">php</span><span class="nv">$ </span><span class="sh">{
+        #    proxy_pass   http://127.0.0.1;
+        #}
+
+        # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+        #
+        #location ~ </span><span class="se">\.</span><span class="sh">php</span><span class="nv">$ </span><span class="sh">{
+        #    root           html;
+        #    fastcgi_pass   127.0.0.1:9000;
+        #    fastcgi_index  index.php;
+        #    fastcgi_param  SCRIPT_FILENAME  /scripts</span><span class="nv">$fastcgi_script_name</span><span class="sh">;
+        #    include        fastcgi_params;
+        #}
+
+        # deny access to .htaccess files, if Apache's document root
+        # concurs with nginx's one
+        #
+        #location ~ /</span><span class="se">\.</span><span class="sh">ht {
+        #    deny  all;
+        #}
+    }
+
+    # another virtual host using mix of IP-, name-, and port-based configuration
+    #
+    #server {
+    #    listen       8000;
+    #    listen       somename:8080;
+    #    server_name  somename  alias  another.alias;
+
+    #    location / {
+    #        root   html;
+    #        index  index.html index.htm;
+    #    }
+    #}
+
+    # HTTPS server
+    #
+    #server {
+    #    listen       443 ssl;
+    #    server_name  localhost;
+
+    #    ssl_certificate      cert.pem;
+    #    ssl_certificate_key  cert.key;
+
+    #    ssl_session_cache    shared:SSL:1m;
+    #    ssl_session_timeout  5m;
+
+    #    ssl_ciphers  HIGH:!aNULL:!MD5;
+    #    ssl_prefer_server_ciphers  on;
+
+    #    location / {
+    #        root   html;
+    #        index  index.html index.htm;
+    #    }
+    #}
+}
+</span><span class="no">EOF
+</span></code></pre></div></div>
+
+<h3 id="32-设置文件权限">3.2 设置文件权限</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 设置 nginx 目录权限</span>
+<span class="nb">sudo chown</span> <span class="nt">-R</span> nginx:nginx /data/nginx
+<span class="nb">sudo chmod </span>755 /data/nginx
+<span class="nb">sudo chmod </span>644 /data/nginx/conf/nginx.conf
+<span class="nb">sudo chmod </span>755 /data/nginx/conf
+<span class="nb">sudo chmod </span>755 /data/nginx/logs
+<span class="nb">sudo chmod </span>755 /data/nginx/html
+</code></pre></div></div>
+
+<h2 id="4-配置-systemd-服务">4. 配置 systemd 服务</h2>
+
+<h3 id="41-创建-systemd-服务文件">4.1 创建 systemd 服务文件</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 创建 nginx.service 文件</span>
+<span class="nb">sudo tee</span> /etc/systemd/system/nginx.service <span class="o">&gt;</span> /dev/null <span class="o">&lt;&lt;</span><span class="no">EOF</span><span class="sh">
+[Unit]
+Description=The nginx HTTP and reverse proxy server
+Documentation=http://nginx.org/en/docs/
+After=network-online.target remote-fs.target nss-lookup.target
+Wants=network-online.target
+
+[Service]
+Type=forking
+PIDFile=/data/nginx/logs/nginx.pid
+ExecStartPre=/data/nginx/sbin/nginx -t
+ExecStart=/data/nginx/sbin/nginx
+ExecReload=/bin/kill -s HUP </span><span class="se">\$</span><span class="sh">MAINPID
+ExecStop=/bin/kill -s TERM </span><span class="se">\$</span><span class="sh">MAINPID
+KillSignal=SIGQUIT
+TimeoutStopSec=5
+KillMode=mixed
+PrivateTmp=true
+
+# Security settings
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/data/nginx
+
+[Install]
+WantedBy=multi-user.target
+</span><span class="no">EOF
+</span></code></pre></div></div>
+
+<h3 id="42-启用和启动服务">4.2 启用和启动服务</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 重新加载 systemd 配置</span>
+<span class="nb">sudo </span>systemctl daemon-reload
+
+<span class="c"># 启用 nginx 服务（开机自启）</span>
+<span class="nb">sudo </span>systemctl <span class="nb">enable </span>nginx
+
+<span class="c"># 启动 nginx 服务</span>
+<span class="nb">sudo </span>systemctl start nginx
+
+<span class="c"># 检查服务状态</span>
+<span class="nb">sudo </span>systemctl status nginx
+</code></pre></div></div>
+
+<h3 id="43-验证服务">4.3 验证服务</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 检查 nginx 进程</span>
+ps aux | <span class="nb">grep </span>nginx
+
+<span class="c"># 检查端口监听</span>
+ss <span class="nt">-tlnp</span> | <span class="nb">grep</span> :80
+
+<span class="c"># 测试配置文件</span>
+/data/nginx/sbin/nginx <span class="nt">-t</span>
+
+<span class="c"># 测试网页访问</span>
+curl <span class="nt">-I</span> http://localhost
+</code></pre></div></div>
+
+<h2 id="5-配置防火墙">5. 配置防火墙</h2>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 检查防火墙状态</span>
+<span class="nb">sudo </span>firewall-cmd <span class="nt">--state</span>
+
+<span class="c"># 永久开放 HTTP 端口</span>
+<span class="nb">sudo </span>firewall-cmd <span class="nt">--permanent</span> <span class="nt">--add-service</span><span class="o">=</span>http
+
+<span class="c"># 永久开放 HTTPS 端口（如果需要）</span>
+<span class="nb">sudo </span>firewall-cmd <span class="nt">--permanent</span> <span class="nt">--add-service</span><span class="o">=</span>https
+
+<span class="c"># 重新加载防火墙规则</span>
+<span class="nb">sudo </span>firewall-cmd <span class="nt">--reload</span>
+
+<span class="c"># 查看开放的服务</span>
+<span class="nb">sudo </span>firewall-cmd <span class="nt">--list-services</span>
+</code></pre></div></div>
+
+<h2 id="6-配置-logrotate">6. 配置 Logrotate</h2>
+
+<h3 id="61-创建-logrotate-配置文件">6.1 创建 logrotate 配置文件</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 创建 nginx logrotate 配置</span>
+<span class="nb">sudo tee</span> /etc/logrotate.d/nginx <span class="o">&gt;</span> /dev/null <span class="o">&lt;&lt;</span><span class="no">EOF</span><span class="sh">
+/data/nginx/logs/*.log {
+    daily
+    missingok
+    rotate 30
+    compress
+    delaycompress
+    notifempty
+    create 644 nginx nginx
+    sharedscripts
+    postrotate
+        if [ -f /data/nginx/logs/nginx.pid ]; then
+            /bin/kill -USR1 </span><span class="se">\$</span><span class="sh">(cat /data/nginx/logs/nginx.pid)
+        fi
+    endscript
+}
+</span><span class="no">EOF
+</span></code></pre></div></div>
+
+<h3 id="62-logrotate-配置说明">6.2 logrotate 配置说明</h3>
+
+<ul>
+  <li><strong>daily</strong>: 每天轮转一次日志</li>
+  <li><strong>missingok</strong>: 如果日志文件不存在，不报错</li>
+  <li><strong>rotate 30</strong>: 保留30个轮转的日志文件</li>
+  <li><strong>compress</strong>: 压缩轮转的日志文件</li>
+  <li><strong>delaycompress</strong>: 延迟压缩，下次轮转时才压缩</li>
+  <li><strong>notifempty</strong>: 如果日志文件为空，不进行轮转</li>
+  <li><strong>create 644 nginx nginx</strong>: 创建新日志文件的权限和所有者</li>
+  <li><strong>sharedscripts</strong>: 多个日志文件共享脚本</li>
+  <li><strong>postrotate</strong>: 轮转后执行的脚本</li>
+</ul>
+
+<h3 id="63-测试-logrotate">6.3 测试 logrotate</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 测试 logrotate 配置</span>
+<span class="nb">sudo </span>logrotate <span class="nt">-d</span> /etc/logrotate.d/nginx
+
+<span class="c"># 强制执行 logrotate</span>
+<span class="nb">sudo </span>logrotate <span class="nt">-f</span> /etc/logrotate.d/nginx
+
+<span class="c"># 查看 logrotate 状态</span>
+<span class="nb">sudo cat</span> /var/lib/logrotate/logrotate.status | <span class="nb">grep </span>nginx
+</code></pre></div></div>
+
+<h2 id="7-性能优化配置">7. 性能优化配置</h2>
+
+<h3 id="71-系统级优化">7.1 系统级优化</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 优化文件描述符限制</span>
+<span class="nb">sudo tee</span> <span class="nt">-a</span> /etc/security/limits.conf <span class="o">&gt;</span> /dev/null <span class="o">&lt;&lt;</span><span class="no">EOF</span><span class="sh">
+nginx soft nofile 65535
+nginx hard nofile 65535
+</span><span class="no">EOF
+
+</span><span class="c"># 优化内核参数</span>
+<span class="nb">sudo tee</span> /etc/sysctl.d/99-nginx.conf <span class="o">&gt;</span> /dev/null <span class="o">&lt;&lt;</span><span class="no">EOF</span><span class="sh">
+# 网络优化
+net.core.somaxconn = 65535
+net.core.netdev_max_backlog = 5000
+net.ipv4.tcp_max_syn_backlog = 65535
+net.ipv4.tcp_fin_timeout = 10
+net.ipv4.tcp_keepalive_time = 1200
+net.ipv4.tcp_max_tw_buckets = 5000
+
+# 文件系统优化
+fs.file-max = 2097152
+vm.swappiness = 10
+</span><span class="no">EOF
+
+</span><span class="c"># 应用内核参数</span>
+<span class="nb">sudo </span>sysctl <span class="nt">-p</span> /etc/sysctl.d/99-nginx.conf
+</code></pre></div></div>
+
+<h3 id="72-nginx-性能配置">7.2 Nginx 性能配置</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 创建性能优化配置文件</span>
+<span class="nb">sudo tee</span> /etc/nginx/conf.d/performance.conf <span class="o">&gt;</span> /dev/null <span class="o">&lt;&lt;</span><span class="no">EOF</span><span class="sh">
+# Worker 进程优化
+worker_processes auto;
+worker_cpu_affinity auto;
+worker_rlimit_nofile 65535;
+
+# 事件模块优化
+events {
+    worker_connections 65535;
+    use epoll;
+    multi_accept on;
+    accept_mutex off;
+}
+
+# HTTP 模块优化
+http {
+    # 连接优化
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    keepalive_requests 1000;
+
+    # 缓冲区优化
+    client_body_buffer_size 128k;
+    client_max_body_size 10m;
+    client_header_buffer_size 1k;
+    large_client_header_buffers 4 4k;
+    output_buffers 1 32k;
+    postpone_output 1460;
+
+    # 超时设置
+    client_header_timeout 3m;
+    client_body_timeout 3m;
+    send_timeout 3m;
+
+    # 压缩优化
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1k;
+    gzip_buffers 4 16k;
+    gzip_comp_level 6;
+    gzip_types
+        text/plain
+        text/css
+        text/xml
+        text/javascript
+        application/json
+        application/javascript
+        application/xml+rss
+        application/atom+xml
+        image/svg+xml;
+}
+</span><span class="no">EOF
+</span></code></pre></div></div>
+
+<h2 id="8-监控和维护">8. 监控和维护</h2>
+
+<h3 id="81-创建监控脚本">8.1 创建监控脚本</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 创建 nginx 状态检查脚本</span>
+<span class="nb">sudo tee</span> /usr/local/bin/nginx-monitor.sh <span class="o">&gt;</span> /dev/null <span class="o">&lt;&lt;</span><span class="sh">'</span><span class="no">EOF</span><span class="sh">'
+#!/bin/bash
+
+# Nginx 监控脚本
+LOG_FILE="/var/log/nginx/monitor.log"
+DATE=</span><span class="si">$(</span><span class="nb">date</span> <span class="s1">'+%Y-%m-%d %H:%M:%S'</span><span class="si">)</span><span class="sh">
+
+# 检查 nginx 进程
+if ! pgrep nginx &gt; /dev/null; then
+    echo "[</span><span class="nv">$DATE</span><span class="sh">] ERROR: Nginx process not running" &gt;&gt; </span><span class="nv">$LOG_FILE</span><span class="sh">
+    systemctl start nginx
+    echo "[</span><span class="nv">$DATE</span><span class="sh">] INFO: Attempted to restart nginx" &gt;&gt; </span><span class="nv">$LOG_FILE</span><span class="sh">
+else
+    echo "[</span><span class="nv">$DATE</span><span class="sh">] INFO: Nginx is running" &gt;&gt; </span><span class="nv">$LOG_FILE</span><span class="sh">
+fi
+
+# 检查端口监听
+if ! ss -tlnp | grep :80 &gt; /dev/null; then
+    echo "[</span><span class="nv">$DATE</span><span class="sh">] ERROR: Port 80 not listening" &gt;&gt; </span><span class="nv">$LOG_FILE</span><span class="sh">
+fi
+
+# 检查配置文件
+if ! nginx -t &gt; /dev/null 2&gt;&amp;1; then
+    echo "[</span><span class="nv">$DATE</span><span class="sh">] ERROR: Nginx configuration test failed" &gt;&gt; </span><span class="nv">$LOG_FILE</span><span class="sh">
+fi
+
+# 检查日志文件大小
+ACCESS_LOG_SIZE=</span><span class="si">$(</span><span class="nb">stat</span> <span class="nt">-c</span>%s <span class="s2">"/var/log/nginx/access.log"</span> 2&gt;/dev/null <span class="o">||</span> <span class="nb">echo </span>0<span class="si">)</span><span class="sh">
+ERROR_LOG_SIZE=</span><span class="si">$(</span><span class="nb">stat</span> <span class="nt">-c</span>%s <span class="s2">"/var/log/nginx/error.log"</span> 2&gt;/dev/null <span class="o">||</span> <span class="nb">echo </span>0<span class="si">)</span><span class="sh">
+
+if [ </span><span class="nv">$ACCESS_LOG_SIZE</span><span class="sh"> -gt 1073741824 ]; then  # 1GB
+    echo "[</span><span class="nv">$DATE</span><span class="sh">] WARNING: Access log size is large: </span><span class="nv">$ACCESS_LOG_SIZE</span><span class="sh"> bytes" &gt;&gt; </span><span class="nv">$LOG_FILE</span><span class="sh">
+fi
+
+if [ </span><span class="nv">$ERROR_LOG_SIZE</span><span class="sh"> -gt 104857600 ]; then  # 100MB
+    echo "[</span><span class="nv">$DATE</span><span class="sh">] WARNING: Error log size is large: </span><span class="nv">$ERROR_LOG_SIZE</span><span class="sh"> bytes" &gt;&gt; </span><span class="nv">$LOG_FILE</span><span class="sh">
+fi
+</span><span class="no">EOF
+
+</span><span class="c"># 设置执行权限</span>
+<span class="nb">sudo chmod</span> +x /usr/local/bin/nginx-monitor.sh
+
+<span class="c"># 添加到 crontab</span>
+<span class="o">(</span>crontab <span class="nt">-l</span> 2&gt;/dev/null<span class="p">;</span> <span class="nb">echo</span> <span class="s2">"*/5 * * * * /usr/local/bin/nginx-monitor.sh"</span><span class="o">)</span> | crontab -
+</code></pre></div></div>
+
+<h3 id="82-创建备份脚本">8.2 创建备份脚本</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 创建配置备份脚本</span>
+<span class="nb">sudo tee</span> /usr/local/bin/nginx-backup.sh <span class="o">&gt;</span> /dev/null <span class="o">&lt;&lt;</span><span class="sh">'</span><span class="no">EOF</span><span class="sh">'
+#!/bin/bash
+
+# Nginx 配置备份脚本
+BACKUP_DIR="/backup/nginx"
+DATE=</span><span class="si">$(</span><span class="nb">date</span> <span class="s1">'+%Y%m%d_%H%M%S'</span><span class="si">)</span><span class="sh">
+BACKUP_FILE="nginx_config_</span><span class="nv">$DATE</span><span class="sh">.tar.gz"
+
+# 创建备份目录
+mkdir -p </span><span class="nv">$BACKUP_DIR</span><span class="sh">
+
+# 备份配置文件
+tar -czf "</span><span class="nv">$BACKUP_DIR</span><span class="sh">/</span><span class="nv">$BACKUP_FILE</span><span class="sh">" /etc/nginx/ /usr/share/nginx/html/
+
+echo "Nginx configuration backed up to: </span><span class="nv">$BACKUP_DIR</span><span class="sh">/</span><span class="nv">$BACKUP_FILE</span><span class="sh">"
+
+# 保留最近7天的备份
+find </span><span class="nv">$BACKUP_DIR</span><span class="sh"> -name "nginx_config_*.tar.gz" -mtime +7 -delete
+</span><span class="no">EOF
+
+</span><span class="c"># 设置执行权限</span>
+<span class="nb">sudo chmod</span> +x /usr/local/bin/nginx-backup.sh
+
+<span class="c"># 添加每日备份任务</span>
+<span class="o">(</span>crontab <span class="nt">-l</span> 2&gt;/dev/null<span class="p">;</span> <span class="nb">echo</span> <span class="s2">"0 2 * * * /usr/local/bin/nginx-backup.sh"</span><span class="o">)</span> | crontab -
+</code></pre></div></div>
+
+<h2 id="9-常用管理命令">9. 常用管理命令</h2>
+
+<h3 id="91-服务管理">9.1 服务管理</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 启动服务</span>
+<span class="nb">sudo </span>systemctl start nginx
+
+<span class="c"># 停止服务</span>
+<span class="nb">sudo </span>systemctl stop nginx
+
+<span class="c"># 重启服务</span>
+<span class="nb">sudo </span>systemctl restart nginx
+
+<span class="c"># 重新加载配置</span>
+<span class="nb">sudo </span>systemctl reload nginx
+
+<span class="c"># 查看服务状态</span>
+<span class="nb">sudo </span>systemctl status nginx
+
+<span class="c"># 查看服务日志</span>
+<span class="nb">sudo </span>journalctl <span class="nt">-u</span> nginx <span class="nt">-f</span>
+</code></pre></div></div>
+
+<h3 id="92-配置管理">9.2 配置管理</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 测试配置文件</span>
+/data/nginx/sbin/nginx <span class="nt">-t</span>
+
+<span class="c"># 重新加载配置</span>
+/data/nginx/sbin/nginx <span class="nt">-s</span> reload
+
+<span class="c"># 查看编译参数</span>
+/data/nginx/sbin/nginx <span class="nt">-V</span>
+
+<span class="c"># 查看版本信息</span>
+/data/nginx/sbin/nginx <span class="nt">-v</span>
+</code></pre></div></div>
+
+<h3 id="93-日志管理">9.3 日志管理</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 查看访问日志</span>
+<span class="nb">sudo tail</span> <span class="nt">-f</span> /data/nginx/logs/access.log
+
+<span class="c"># 查看错误日志</span>
+<span class="nb">sudo tail</span> <span class="nt">-f</span> /data/nginx/logs/error.log
+
+<span class="c"># 分析访问日志（统计IP）</span>
+<span class="nb">sudo awk</span> <span class="s1">'{print $1}'</span> /data/nginx/logs/access.log | <span class="nb">sort</span> | <span class="nb">uniq</span> <span class="nt">-c</span> | <span class="nb">sort</span> <span class="nt">-nr</span> | <span class="nb">head</span> <span class="nt">-10</span>
+
+<span class="c"># 分析访问日志（统计状态码）</span>
+<span class="nb">sudo awk</span> <span class="s1">'{print $9}'</span> /data/nginx/logs/access.log | <span class="nb">sort</span> | <span class="nb">uniq</span> <span class="nt">-c</span> | <span class="nb">sort</span> <span class="nt">-nr</span>
+</code></pre></div></div>
+
+<h2 id="10-故障排除">10. 故障排除</h2>
+
+<h3 id="101-常见问题">10.1 常见问题</h3>
+
+<ol>
+  <li><strong>服务启动失败</strong>
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 检查配置文件语法</span>
+/data/nginx/sbin/nginx <span class="nt">-t</span>
+
+<span class="c"># 查看详细错误信息</span>
+<span class="nb">sudo </span>journalctl <span class="nt">-u</span> nginx <span class="nt">-n</span> 50
+
+<span class="c"># 检查端口占用</span>
+<span class="nb">sudo </span>ss <span class="nt">-tlnp</span> | <span class="nb">grep</span> :80
+</code></pre></div>    </div>
+  </li>
+  <li><strong>权限问题</strong>
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 检查文件权限</span>
+<span class="nb">ls</span> <span class="nt">-la</span> /data/nginx/conf/
+<span class="nb">ls</span> <span class="nt">-la</span> /data/nginx/logs/
+
+<span class="c"># 重新设置权限</span>
+<span class="nb">sudo chown</span> <span class="nt">-R</span> nginx:nginx /data/nginx
+</code></pre></div>    </div>
+  </li>
+  <li><strong>性能问题</strong>
+    <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 查看连接数</span>
+ss <span class="nt">-s</span>
+
+<span class="c"># 查看 nginx 状态</span>
+curl http://localhost/nginx_status
+
+<span class="c"># 查看系统资源</span>
+top <span class="nt">-p</span> <span class="si">$(</span>pgrep nginx<span class="si">)</span>
+</code></pre></div>    </div>
+  </li>
+</ol>
+
+<h3 id="102-调试技巧">10.2 调试技巧</h3>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># 启用调试模式</span>
+<span class="nb">sudo sed</span> <span class="nt">-i</span> <span class="s1">'s/error_log.*/error_log logs\/error.log debug;/'</span> /data/nginx/conf/nginx.conf
+<span class="nb">sudo </span>systemctl reload nginx
+
+<span class="c"># 查看详细错误信息</span>
+<span class="nb">sudo tail</span> <span class="nt">-f</span> /data/nginx/logs/error.log
+
+<span class="c"># 恢复正常日志级别</span>
+<span class="nb">sudo sed</span> <span class="nt">-i</span> <span class="s1">'s/error_log.*/error_log logs\/error.log info;/'</span> /data/nginx/conf/nginx.conf
+<span class="nb">sudo </span>systemctl reload nginx
+</code></pre></div></div>
+
+<h2 id="总结">总结</h2>
+
+<p>通过本文的详细步骤，我们成功实现了：</p>
+
+<ol>
+  <li><strong>🔧 二进制编译安装</strong>：从源码编译安装 Nginx，获得最佳性能和自定义功能</li>
+  <li><strong>⚙️ systemd 服务管理</strong>：配置了完整的 systemd 服务，支持开机自启和服务管理</li>
+  <li><strong>📋 logrotate 日志轮转</strong>：实现了自动日志轮转，避免日志文件过大</li>
+  <li><strong>🚀 性能优化</strong>：系统级和应用级的性能优化配置</li>
+  <li><strong>📊 监控维护</strong>：自动化监控和备份脚本</li>
+  <li><strong>🛡️ 安全配置</strong>：合理的权限设置和安全加固</li>
+</ol>
+
+<p>这套配置方案具有以下优势：</p>
+<ul>
+  <li>✅ <strong>高性能</strong>：编译时启用了多种性能模块</li>
+  <li>✅ <strong>易管理</strong>：systemd 服务管理，支持标准的服务操作</li>
+  <li>✅ <strong>自动化</strong>：日志轮转、监控、备份全部自动化</li>
+  <li>✅ <strong>可扩展</strong>：模块化配置，便于后续扩展</li>
+  <li>✅ <strong>生产就绪</strong>：包含了生产环境所需的各种配置</li>
+</ul>
+
+<p>建议在生产环境部署前，先在测试环境验证所有配置，并根据实际业务需求调整相关参数。</p>
+
+  </div>
+
+  <p class="post-date text-bold">
+
+    <span class="text-upcase">DevOps Engineer</span> /
+
+
+    <span class="text-upcase">January 2024</span>
+
+
+
+
+
+  (2076 Words,
+  12 Minutes)
+
+
+</p>
+
+<div class="soopr-btn"
+   data-twitter="SooprCo"
+>
+</div>
+
+
+  <div class="">
+
+    <span class="tag">nginx</span>
+
+    <span class="tag">rocky</span>
+
+    <span class="tag">systemd</span>
+
+    <span class="tag">logrotate</span>
+
+    <span class="tag">binary</span>
+
+  </div>
+
+
+</article>
+
+    </div><script async defer src="https://sdk.soopr.co/soopr.js"></script></body>
+</html>
