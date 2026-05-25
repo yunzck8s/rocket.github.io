@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "skills": {
+    "find-skills": {
+      "source": "vercel-labs/skills",
+      "sourceType": "github",
+      "computedHash": "25872a21881a950edc3db1f3329664d60405d539660ce05b3265db2de06a7dfd"
+    },
+    "markdown-pro": {
+      "source": "icartsh/icartsh_plugin",
+      "sourceType": "github",
+      "computedHash": "f40e5562e6f62c12986fb08f732c900cb3438cf436bffcae0c2a3a911a092637"
+    }
+  }
+}
