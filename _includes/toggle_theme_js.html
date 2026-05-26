@@ -1,31 +1,75 @@
 <script type="text/javascript">
-  window.addEventListener('load', themeChange);
-  const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : null;
-  if (currentTheme)
-    document.documentElement.setAttribute('data-theme', currentTheme);
+  (function() {
+    const themeConfig = '{{ site.theme_config.appearance | default: "auto" }}';
+    const storageKey = 'theme';
 
-  function themeChange() {
-    let button = document.querySelector('.theme-toggle');
+    function getStoredTheme() {
+      return localStorage.getItem(storageKey);
+    }
 
-    button.addEventListener('click', function (e) {
-      let currentTheme = document.documentElement.getAttribute('data-theme');
-      if (currentTheme === 'dark') {
-        transition();
-        document.documentElement.setAttribute('data-theme', 'light');
-        localStorage.setItem('theme', 'light');
-      } else {
-        transition();
-        document.documentElement.setAttribute('data-theme', 'dark');
-        localStorage.setItem('theme', 'dark');
+    function setStoredTheme(theme) {
+      localStorage.setItem(storageKey, theme);
+    }
+
+    function getResolvedTheme() {
+      const storedTheme = getStoredTheme();
+      if (storedTheme) {
+        return storedTheme;
       }
+      if (themeConfig === 'auto') {
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      return themeConfig;
+    }
+
+    function updateToggleButton(activeTheme) {
+      const button = document.querySelector('.theme-toggle');
+      if (!button) return;
+
+      const targetTheme = activeTheme === 'dark' ? 'light' : 'dark';
+      const label = `Switch to ${targetTheme} mode`;
+
+      button.setAttribute('aria-label', label);
+      button.setAttribute('title', label);
+    }
+
+    function applyTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      updateToggleButton(theme);
+    }
+
+    // Initial application
+    const initialTheme = getResolvedTheme();
+    document.documentElement.setAttribute('data-theme', initialTheme);
+
+    window.addEventListener('load', function() {
+      const button = document.querySelector('.theme-toggle');
+      if (!button) return;
+
+      updateToggleButton(getResolvedTheme());
+
+      button.addEventListener('click', function() {
+        const currentTheme = document.documentElement.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+        transition();
+        applyTheme(newTheme);
+        setStoredTheme(newTheme);
+      });
     });
 
-    let transition = () => {
+    function transition() {
       document.documentElement.classList.add('transition');
       window.setTimeout(() => {
         document.documentElement.classList.remove('transition');
       }, 1000);
     }
-  }
-</script>
 
+    // Listen for system preference changes if in 'auto' mode and no override
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      if (!getStoredTheme() && themeConfig === 'auto') {
+        applyTheme(e.matches ? 'dark' : 'light');
+      }
+    });
+  })();
+</script>
