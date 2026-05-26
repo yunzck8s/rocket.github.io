@@ -103,6 +103,26 @@ a:hover {
   border-bottom-color: var(--accent-secondary);
 }
 
+/* Accessibility */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--accent-primary);
+  color: white;
+  padding: 8px;
+  z-index: 1001;
+  transition: top 0.3s;
+  text-decoration: none;
+  border-bottom-right-radius: var(--radius-md);
+}
+
+.skip-link:focus {
+  top: 0;
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
 /* Layout */
 .container {
   max-width: 768px;
