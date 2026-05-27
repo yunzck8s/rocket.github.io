@@ -3,7 +3,9 @@ layout: default
 ---
 
 <header class="page-header">
-  <a href="{{ "/" | relative_url }}" class="back-link">← {{ site.theme_config.back_home_text }}</a>
+  <a href="{{ "/" | relative_url }}" class="back-link" aria-label="Back to home page">
+    <span aria-hidden="true">←</span> {{ site.theme_config.back_home_text }}
+  </a>
   <h1>All Posts</h1>
 </header>
 
