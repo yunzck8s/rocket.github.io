@@ -4,7 +4,9 @@ layout: default
 
 <article class="post">
   <header class="post-header">
-    <a href="{{ "/" | relative_url }}" class="back-link">← {{ site.theme_config.back_home_text }}</a>
+    <a href="{{ "/" | relative_url }}" class="back-link" aria-label="Back to home page">
+      <span aria-hidden="true">←</span> {{ site.theme_config.back_home_text }}
+    </a>
     <h1 class="post-title">{{ page.title }}</h1>
     <div class="post-meta">
       <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%B %d, %Y" }}</time>
