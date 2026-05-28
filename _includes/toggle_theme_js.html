@@ -6,18 +6,33 @@
 
   function themeChange() {
     let button = document.querySelector('.theme-toggle');
+    if (!button) return;
+
+    function getActiveTheme() {
+      let theme = document.documentElement.getAttribute('data-theme');
+      if (theme === 'auto') {
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      return theme;
+    }
+
+    function updateButtonLabel(theme) {
+      let targetTheme = theme === 'dark' ? 'light' : 'dark';
+      let label = `Switch to ${targetTheme} mode`;
+      button.setAttribute('aria-label', label);
+      button.setAttribute('title', label);
+    }
+
+    updateButtonLabel(getActiveTheme());
 
     button.addEventListener('click', function (e) {
-      let currentTheme = document.documentElement.getAttribute('data-theme');
-      if (currentTheme === 'dark') {
-        transition();
-        document.documentElement.setAttribute('data-theme', 'light');
-        localStorage.setItem('theme', 'light');
-      } else {
-        transition();
-        document.documentElement.setAttribute('data-theme', 'dark');
-        localStorage.setItem('theme', 'dark');
-      }
+      let activeTheme = getActiveTheme();
+      let newTheme = activeTheme === 'dark' ? 'light' : 'dark';
+
+      transition();
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      updateButtonLabel(newTheme);
     });
 
     let transition = () => {
@@ -28,4 +43,3 @@
     }
   }
 </script>
-
