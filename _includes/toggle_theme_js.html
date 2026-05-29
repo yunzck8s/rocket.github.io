@@ -7,16 +7,37 @@
   function themeChange() {
     let button = document.querySelector('.theme-toggle');
 
+    function updateButton(theme) {
+      const isDark = theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      button.setAttribute('aria-label', isDark ? 'Switch to light theme' : 'Switch to dark theme');
+      button.setAttribute('title', isDark ? 'Switch to light theme' : 'Switch to dark theme');
+    }
+
+    updateButton(document.documentElement.getAttribute('data-theme'));
+
     button.addEventListener('click', function (e) {
       let currentTheme = document.documentElement.getAttribute('data-theme');
-      if (currentTheme === 'dark') {
+      let resolvedTheme = currentTheme;
+      if (resolvedTheme === 'auto') {
+        resolvedTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+
+      if (resolvedTheme === 'dark') {
         transition();
         document.documentElement.setAttribute('data-theme', 'light');
         localStorage.setItem('theme', 'light');
+        updateButton('light');
       } else {
         transition();
         document.documentElement.setAttribute('data-theme', 'dark');
         localStorage.setItem('theme', 'dark');
+        updateButton('dark');
+      }
+    });
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+      if (document.documentElement.getAttribute('data-theme') === 'auto') {
+        updateButton('auto');
       }
     });
 
