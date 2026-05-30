@@ -1,31 +1,46 @@
 <script type="text/javascript">
-  window.addEventListener('load', themeChange);
-  const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : null;
-  if (currentTheme)
-    document.documentElement.setAttribute('data-theme', currentTheme);
+  const themeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+  function updateButton(theme) {
+    const button = document.querySelector('.theme-toggle');
+    if (!button) return;
+    const resolvedTheme = theme === 'auto' ? (themeMediaQuery.matches ? 'dark' : 'light') : theme;
+    const nextTheme = resolvedTheme === 'dark' ? 'light' : 'dark';
+    button.setAttribute('aria-label', `Switch to ${nextTheme} mode`);
+    button.setAttribute('title', `Switch to ${nextTheme} mode`);
+  }
 
   function themeChange() {
-    let button = document.querySelector('.theme-toggle');
+    const button = document.querySelector('.theme-toggle');
+    if (!button) return;
 
-    button.addEventListener('click', function (e) {
-      let currentTheme = document.documentElement.getAttribute('data-theme');
-      if (currentTheme === 'dark') {
-        transition();
-        document.documentElement.setAttribute('data-theme', 'light');
-        localStorage.setItem('theme', 'light');
-      } else {
-        transition();
-        document.documentElement.setAttribute('data-theme', 'dark');
-        localStorage.setItem('theme', 'dark');
-      }
-    });
+    button.addEventListener('click', () => {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      const resolvedTheme = currentTheme === 'auto' ? (themeMediaQuery.matches ? 'dark' : 'light') : currentTheme;
+      const nextTheme = resolvedTheme === 'dark' ? 'light' : 'dark';
 
-    let transition = () => {
       document.documentElement.classList.add('transition');
+      document.documentElement.setAttribute('data-theme', nextTheme);
+      localStorage.setItem('theme', nextTheme);
+      updateButton(nextTheme);
+
       window.setTimeout(() => {
         document.documentElement.classList.remove('transition');
       }, 1000);
-    }
+    });
+
+    themeMediaQuery.addEventListener('change', () => {
+      if (document.documentElement.getAttribute('data-theme') === 'auto') {
+        updateButton('auto');
+      }
+    });
+
+    updateButton(document.documentElement.getAttribute('data-theme'));
+  }
+
+  window.addEventListener('load', themeChange);
+  const currentTheme = localStorage.getItem('theme');
+  if (currentTheme) {
+    document.documentElement.setAttribute('data-theme', currentTheme);
   }
 </script>
-

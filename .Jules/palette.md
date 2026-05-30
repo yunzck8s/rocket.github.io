@@ -9,3 +9,9 @@
 **Learning:** "Skip to content" links are essential for keyboard and screen reader users to bypass repetitive navigation. They should be the first focusable element in the DOM and use `tabindex="-1"` on the target container to ensure programmatic focus works correctly in all browsers.
 
 **Action:** Implement "Skip to content" links in all multi-page layouts, ensuring the target container has a unique ID and proper `tabindex`.
+
+## 2026-05-30 - Accessible Interactive Components & Decorative Elements
+
+**Learning:** Micro-UX improvements significantly impact accessibility. Hiding decorative-only symbols (like arrows) from screen readers via `aria-hidden="true"` reduces noise, while providing descriptive `aria-label` and `title` attributes on icon-only buttons (like theme toggles) ensures they are actionable for all users. Dynamic ARIA updates are crucial for maintaining an accurate state in interactive elements.
+
+**Action:** Always wrap decorative symbols in `aria-hidden` and ensure all interactive elements have accessible names that reflect their current and next states.
