@@ -9,3 +9,9 @@
 **Learning:** "Skip to content" links are essential for keyboard and screen reader users to bypass repetitive navigation. They should be the first focusable element in the DOM and use `tabindex="-1"` on the target container to ensure programmatic focus works correctly in all browsers.
 
 **Action:** Implement "Skip to content" links in all multi-page layouts, ensuring the target container has a unique ID and proper `tabindex`.
+
+## 2026-06-01 - UX/Accessibility: Hiding Decorative Elements
+
+**Learning:** Decorative characters (like arrows `←`, `→` or separators `»`) should be wrapped in `<span aria-hidden="true">` to prevent screen readers from announcing them, especially when they are part of links where the text already provides the context.
+
+**Action:** Always wrap decorative icons or characters in `aria-hidden="true"` when they don't add semantic value to screen reader users.
